@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shafeeq Aadhil. | AI Engineer & Full-Stack Warrior</title>
+    <meta name="description" content="Portfolio of Shafeeq Aadhil, AI Engineer and Full-Stack Developer.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">
+                SHAFEEQ<span class="gold-dot">.</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#dsa">DSA</a></li>
+                <li><a href="#journey">Journey</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <!-- Canvas for particle constellation -->
+        <canvas id="particle-canvas"></canvas>
+        
+        <div class="hero-content reveal">
+            <div class="badge-pill">
+                <span class="pulsing-dot"></span>
+                Available for collaborations
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="text-gold">Shafeeq</span> <span class="text-white">Aadhil.</span><br>
+                <span class="text-cyan">AI Engineer</span> <span class="text-white">&</span><br>
+                <span class="text-white">Full-Stack</span> <span class="text-gold">Warrior</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                First-year B.Tech CSE (AI/ML) at Kalvium &times; Yenepoya. Building intelligent systems end-to-end &mdash; from model training to production deployment. Coding since 10th grade. Big dreams. Hard work. Zero excuses.
+            </p>
+            
+            <div class="tags-row">
+                <span class="tag">Python</span>
+                <span class="tag">PyTorch</span>
+                <span class="tag">React</span>
+                <span class="tag">FastAPI</span>
+                <span class="tag">Computer Vision</span>
+                <span class="tag">Agentic AI</span>
+            </div>
+            
+            <div class="cta-buttons">
+                <a href="https://github.com/shafeeq" target="_blank" class="btn btn-solid">GitHub ↗</a>
+                <a href="https://linkedin.com/in/shafeeq" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+                <a href="mailto:aadhilxshafeeq@gmail.com" class="btn btn-outline">Email Me</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Movie Quote Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="ticker-item"><i>"Why do we fall? So we can learn to pick ourselves up."</i> &mdash; <span class="ticker-author">Thomas Wayne, Batman Begins</span></div>
+            <div class="ticker-item"><i>"It's not who I am underneath, but what I do that defines me."</i> &mdash; <span class="ticker-author">Bruce Wayne, Batman Begins</span></div>
+            <div class="ticker-item"><i>"The man who passes the sentence should swing the sword."</i> &mdash; <span class="ticker-author">Ned Stark, Game of Thrones</span></div>
+            <div class="ticker-item"><i>"What we do in life echoes in eternity."</i> &mdash; <span class="ticker-author">Maximus, Gladiator</span></div>
+            <div class="ticker-item"><i>"Hope is a good thing, maybe the best of things, and no good thing ever dies."</i> &mdash; <span class="ticker-author">Andy Dufresne, The Shawshank Redemption</span></div>
+            <div class="ticker-item"><i>"The night is darkest just before the dawn. And I promise you, the dawn is coming."</i> &mdash; <span class="ticker-author">Harvey Dent, The Dark Knight</span></div>
+            <div class="ticker-item"><i>"You either die a hero, or you live long enough to see yourself become the villain."</i> &mdash; <span class="ticker-author">Harvey Dent, The Dark Knight</span></div>
+            <div class="ticker-item"><i>"Get busy living, or get busy dying."</i> &mdash; <span class="ticker-author">Andy Dufresne, The Shawshank Redemption</span></div>
+            
+            <!-- Duplicate for seamless loop -->
+            <div class="ticker-item"><i>"Why do we fall? So we can learn to pick ourselves up."</i> &mdash; <span class="ticker-author">Thomas Wayne, Batman Begins</span></div>
+            <div class="ticker-item"><i>"It's not who I am underneath, but what I do that defines me."</i> &mdash; <span class="ticker-author">Bruce Wayne, Batman Begins</span></div>
+            <div class="ticker-item"><i>"The man who passes the sentence should swing the sword."</i> &mdash; <span class="ticker-author">Ned Stark, Game of Thrones</span></div>
+            <div class="ticker-item"><i>"What we do in life echoes in eternity."</i> &mdash; <span class="ticker-author">Maximus, Gladiator</span></div>
+            <div class="ticker-item"><i>"Hope is a good thing, maybe the best of things, and no good thing ever dies."</i> &mdash; <span class="ticker-author">Andy Dufresne, The Shawshank Redemption</span></div>
+            <div class="ticker-item"><i>"The night is darkest just before the dawn. And I promise you, the dawn is coming."</i> &mdash; <span class="ticker-author">Harvey Dent, The Dark Knight</span></div>
+            <div class="ticker-item"><i>"You either die a hero, or you live long enough to see yourself become the villain."</i> &mdash; <span class="ticker-author">Harvey Dent, The Dark Knight</span></div>
+            <div class="ticker-item"><i>"Get busy living, or get busy dying."</i> &mdash; <span class="ticker-author">Andy Dufresne, The Shawshank Redemption</span></div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        
+        <!-- About Section -->
+        <section id="about" class="section reveal">
+            <div class="section-header">
+                <span class="section-label">01 &mdash; About</span>
+                <h2 class="section-title">The Man Behind the Code</h2>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-bio">
+                    <p>I'm <span class="text-white-bold">Shafeeq Aadhil</span> &mdash; a first-year B.Tech CSE (AI/ML) student at <span class="text-white-bold">Kalvium &times; Yenepoya University</span>, currently based in Bengaluru. I don't just write code. I build systems that <span class="text-white-bold">think, see, and solve</span>.</p>
+                    <p>My journey started at Naahar Public School (Pre-KG to 10th), sharpened at Velammal Bodhi Campus (11th&ndash;12th), and now I'm deep in the trenches of <span class="text-white-bold">AI/ML, full-stack engineering</span>, and <span class="text-white-bold">competitive programming</span>.</p>
+                    <p>I'm a leader by instinct and a warrior by choice. I believe in <span class="text-white-bold">actions over words, shipping over talking</span>, and <span class="text-white-bold">grinding over complaining</span>. Big dreams. Hard work. Tons of talent. That's the code I live by.</p>
+                    <p>When I'm not training models or debugging at 3 AM, you'll find me behind a camera, dissecting cult classic films, or chasing the next impossible problem on <span class="text-white-bold">LeetCode</span>.</p>
+                </div>
+                
+                <div class="about-timeline">
+                    <div class="timeline-card">
+                        <div class="dot dot-cyan"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">B.Tech CSE &mdash; AI/ML</h3>
+                            <p class="timeline-meta">Kalvium &times; Yenepoya University &middot; 2025 &ndash; 2029 (Year 1 Completed)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="dot dot-gold"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Higher Secondary (12th)</h3>
+                            <p class="timeline-meta">Velammal Bodhi Campus &middot; 2023 &ndash; 2025</p>
+                        </div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="dot dot-purple"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Primary &amp; Secondary</h3>
+                            <p class="timeline-meta">Naahar Public School &middot; Pre-KG to 10th</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section reveal">
+            <div class="section-header">
+                <span class="section-label">03 &mdash; Battlefield</span>
+                <h2 class="section-title">Shipped &amp; Building</h2>
+            </div>
+            
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <div class="project-card hover-glow-cyan">
+                    <div class="status-badge status-live">Live</div>
+                    <h3 class="project-title">Urban Shield AI</h3>
+                    <p class="project-desc">Predictive Flood &amp; Urban Heat Risk Platform for Bangalore. A dual-engine early-warning system predicting zone-level risk up to 6 hours in advance.</p>
+                    <ul class="project-bullets">
+                        <li>RandomForest Classifier on IMD rainfall + elevation + municipal flood logs</li>
+                        <li>Custom Sigmoid Collapse Model for drainage failure probability</li>
+                        <li>FastAPI/Python backend + TypeScript client-side fallback engine</li>
+                        <li>Interactive Leaflet.js map overlays with 5 Indian language support</li>
+                        <li>72&ndash;96% confidence scores across documented hotspots</li>
+                    </ul>
+                    <div class="project-footer">
+                        <div class="project-tags">
+                            <span>Next.js 14</span><span>TypeScript</span><span>FastAPI</span><span>scikit-learn</span><span>Leaflet.js</span>
+                        </div>
+                        <a href="#" class="project-link">GitHub ↗</a>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card hover-glow-cyan">
+                    <div class="status-badge status-live">Live</div>
+                    <h3 class="project-title">Trackr</h3>
+                    <p class="project-desc">Computer Vision Analytics Platform. Detects, tracks, and analyzes objects in images, video, and live streams for surveillance, traffic, and smart-city use cases.</p>
+                    <ul class="project-bullets">
+                        <li>YOLOv8 multi-class object detection + ByteTrack persistent tracking</li>
+                        <li>Counting, dwell-time, and movement analytics pipeline</li>
+                        <li>Async background job pipeline via FastAPI REST API</li>
+                        <li>Real-time streaming: webcam, RTSP, IP camera feeds</li>
+                        <li>Streamlit dashboard + Docker deployment ready</li>
+                    </ul>
+                    <div class="project-footer">
+                        <div class="project-tags">
+                            <span>YOLOv8</span><span>ByteTrack</span><span>OpenCV</span><span>FastAPI</span><span>Streamlit</span><span>Docker</span>
+                        </div>
+                        <a href="#" class="project-link">GitHub ↗</a>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card hover-glow-cyan">
+                    <div class="status-badge status-building">Building</div>
+                    <h3 class="project-title">Agentic AI Experiments</h3>
+                    <p class="project-desc">Exploring autonomous agent architectures, tool-use patterns, and multi-agent orchestration for real-world task automation.</p>
+                    <ul class="project-bullets">
+                        <li>Building autonomous agents with reasoning + tool-calling loops</li>
+                        <li>Experimenting with multi-agent collaboration patterns</li>
+                        <li>Integrating LLM-powered decision making into workflows</li>
+                    </ul>
+                    <div class="project-footer mt-auto">
+                        <div class="project-tags">
+                            <span>Python</span><span>LLMs</span><span>LangChain</span>
+                        </div>
+                        <a href="#" class="project-link">GitHub ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DSA Section -->
+        <section id="dsa" class="section reveal">
+            <div class="section-header">
+                <span class="section-label">04 &mdash; The Grind</span>
+                <h2 class="section-title">DSA &amp; Problem Solving</h2>
+            </div>
+            
+            <div class="dsa-container">
+                <div class="dsa-header">
+                    <div class="dsa-header-left">
+                        <h3>Consistency Calendar</h3>
+                        <p>LeetCode + GeeksforGeeks practice streak</p>
+                    </div>
+                    <div class="dsa-header-right">
+                        <div class="stat-col">
+                            <span class="stat-num">50+</span>
+                            <span class="stat-label">PROBLEMS</span>
+                        </div>
+                        <div class="stat-col">
+                            <span class="stat-num">Python 3</span>
+                            <span class="stat-label">PRIMARY LANG</span>
+                        </div>
+                        <div class="stat-col">
+                            <span class="stat-num">10th</span>
+                            <span class="stat-label">STARTED CODING</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calendar-scroll-wrap">
+                    <div id="calendar-heatmap" class="calendar-heatmap">
+                        <!-- Generated via JS -->
+                    </div>
+                </div>
+                
+                <div class="calendar-legend">
+                    Less 
+                    <div class="color-scale">
+                        <span class="lvl-0"></span>
+                        <span class="lvl-1"></span>
+                        <span class="lvl-2"></span>
+                        <span class="lvl-3"></span>
+                        <span class="lvl-4"></span>
+                    </div>
+                    More
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="journey" class="section reveal">
+            <div class="section-header">
+                <span class="section-label">05 &mdash; The Journey</span>
+                <h2 class="section-title">Experience &amp; Hustle</h2>
+            </div>
+            
+            <div class="experience-list">
+                <div class="exp-card hover-glow-gold">
+                    <div class="exp-logo">⚔️</div>
+                    <div class="exp-content">
+                        <h3 class="exp-title">Independent Developer &amp; Competitive Programmer</h3>
+                        <p class="exp-meta">Self-Directed &middot; 10th Grade &mdash; Present &middot; Bengaluru, India</p>
+                        <p class="exp-body">Writing and shipping code consistently since 10th grade across web, AI/ML, and systems projects. Solved 50+ problems on LeetCode and HackerRank using Python 3, building a solid foundation in data structures and algorithms. Built and shipped multiple independent projects spanning 3D interactive web experiences, agentic AI, and generative AI.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications Section -->
+        <section id="certifications" class="section reveal">
+            <div class="section-header">
+                <span class="section-label">06 &mdash; Credentials</span>
+                <h2 class="section-title">Certifications</h2>
+            </div>
+            
+            <div class="certs-grid">
+                <div class="cert-card hover-glow-purple">
+                    <div class="cert-icon">🧠</div>
+                    <div class="cert-content">
+                        <h3 class="cert-title">Critical Thinking in the AI Era</h3>
+                        <p class="cert-meta">AI Fluency &amp; Frameworks</p>
+                    </div>
+                </div>
+                <div class="cert-card hover-glow-purple">
+                    <div class="cert-icon">🤖</div>
+                    <div class="cert-content">
+                        <h3 class="cert-title">AI Fluency: Framework &amp; Foundations</h3>
+                        <p class="cert-meta">Core AI Concepts</p>
+                    </div>
+                </div>
+                <div class="cert-card hover-glow-purple">
+                    <div class="cert-icon">⚡</div>
+                    <div class="cert-content">
+                        <h3 class="cert-title">Claude 101</h3>
+                        <p class="cert-meta">Anthropic AI Assistant Mastery</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section reveal contact-section">
+            <div class="section-header contact-header">
+                <span class="section-label">07 &mdash; Connect</span>
+                <h2 class="section-title">Let's Build Something Legendary</h2>
+            </div>
+            
+            <div class="contact-content">
+                <p class="contact-subtext">I'm always open to collaborating on AI/ML projects, open-source contributions, or just talking tech, movies, and Batman theories.</p>
+                <div class="contact-buttons">
+                    <a href="mailto:aadhilxshafeeq@gmail.com" class="btn btn-solid">aadhilxshafeeq@gmail.com</a>
+                    <a href="mailto:shafeeq27.edu@gmail.com" class="btn btn-outline">shafeeq27.edu@gmail.com</a>
+                </div>
+                <div class="contact-socials">
+                    <a href="https://github.com/shafeeq" target="_blank" class="social-link">GitHub</a>
+                    <a href="https://linkedin.com/in/shafeeq" target="_blank" class="social-link">LinkedIn</a>
+                    <a href="mailto:aadhilxshafeeq@gmail.com" class="social-link">Email</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Quote Band -->
+    <div class="footer-quote reveal">
+        <div class="quote-container">
+            <h2 class="quote-text">"Do so much work that it would be unreasonable for you to not be successful."</h2>
+            <p class="quote-cite">&mdash; Alex Hormozi</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Shafeeq Aadhil. Built with obsession. Bengaluru, India.</p>
+    </footer>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
