@@ -47,15 +47,15 @@
                 <div class="hero-socials">
                     <p class="socials-text">Here are my socials</p>
                     <div class="socials-row">
-                        <a href="#" class="social-pill">
+                        <a href="https://github.com/shafeeq27edu-ai" target="_blank" class="social-pill">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                             GitHub
                         </a>
-                        <a href="#" class="social-pill">
+                        <a href="#" target="_blank" class="social-pill">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                             LinkedIn
                         </a>
-                        <a href="#" class="social-pill">
+                        <a href="mailto:aadhilxshafeeq@gmail.com" class="social-pill">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                             Email
                         </a>
@@ -141,7 +141,7 @@
                                 <span class="tech-icon">LF</span>
                             </div>
                             <div class="project-footer">
-                                <a href="#" class="view-project-link">View Project ↗</a>
+                                <a href="#" target="_blank" class="view-project-link">View Project ↗</a>
                             </div>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                                 <span class="tech-icon">DK</span>
                             </div>
                             <div class="project-footer">
-                                <a href="#" class="view-project-link">View Project ↗</a>
+                                <a href="#" target="_blank" class="view-project-link">View Project ↗</a>
                             </div>
                         </div>
                     </div>
@@ -205,12 +205,137 @@
                                 <span class="tech-icon">LL</span>
                             </div>
                             <div class="project-footer">
-                                <a href="#" class="view-project-link">View Project ↗</a>
+                                <a href="#" target="_blank" class="view-project-link">View Project ↗</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+            
+            <!-- Open Source / GitHub Section -->
+            <section id="opensource" class="section opensource-section">
+                <!-- GitHub Activity -->
+                <div class="gh-activity">
+                    <div class="gh-header">
+                        <h2 class="section-header mb-0">GitHub Activity</h2>
+                        <span id="github-count" class="gh-count">Loading...</span>
+                    </div>
+                    <div class="gh-chart-container">
+                        <!-- REAL GitHub contribution chart -->
+                        <img src="https://ghchart.rshah.org/shafeeq27edu-ai" alt="GitHub Contribution Graph" class="gh-chart-img">
+                    </div>
+                    <div class="gh-legend">
+                        <span>Less active</span>
+                        <div class="gh-squares">
+                            <span class="sq sq-0"></span>
+                            <span class="sq sq-1"></span>
+                            <span class="sq sq-2"></span>
+                            <span class="sq sq-3"></span>
+                            <span class="sq sq-4"></span>
+                        </div>
+                        <span>More active</span>
+                    </div>
+                </div>
+                
+                <!-- Open Source Contributions -->
+                <div class="os-contributions mt-4">
+                    <div class="os-header">
+                        <h2 class="section-header mb-0">Open Source Contributions</h2>
+                        <div class="os-filters">
+                            <button class="os-tab active">Merged</button>
+                            <button class="os-tab">Open</button>
+                            <button class="os-tab">Closed</button>
+                        </div>
+                    </div>
+                    
+                    <div id="os-list" class="os-list">
+                        <!-- Populated by JS -->
+                        <div class="os-placeholder">Loading real PR data from GitHub...</div>
+                    </div>
+                    
+                    <div class="os-view-all">
+                        <button class="btn-view-all">View All ↗</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Skills Section -->
+            <section id="skills" class="section skills-section">
+                <h2 class="section-header">Skills &amp; Technologies</h2>
+                <div class="skills-row">
+                    <span class="skill-pill">Python</span>
+                    <span class="skill-pill">Java</span>
+                    <span class="skill-pill">JavaScript</span>
+                    <span class="skill-pill">C++</span>
+                    <span class="skill-pill">SQL</span>
+                    <span class="skill-pill">React</span>
+                    <span class="skill-pill">Next.js</span>
+                    <span class="skill-pill">TypeScript</span>
+                    <span class="skill-pill">FastAPI</span>
+                    <span class="skill-pill">PyTorch</span>
+                    <span class="skill-pill">TensorFlow</span>
+                    <span class="skill-pill">OpenCV</span>
+                    <span class="skill-pill">YOLO</span>
+                    <span class="skill-pill">Git</span>
+                    <span class="skill-pill">Docker</span>
+                    <span class="skill-pill">HTML</span>
+                    <span class="skill-pill">CSS</span>
+                </div>
+            </section>
+            
+            <!-- Blogs Section -->
+            <section id="blog" class="section blog-section">
+                <h2 class="section-header">Blogs</h2>
+                <div class="blog-empty-state">
+                    <p>No blog posts yet. Coming soon.</p>
+                    <button class="btn btn-primary mt-2">Subscribe</button>
+                </div>
+            </section>
+            
+            <!-- Highlights Section -->
+            <section id="highlights" class="section highlights-section">
+                <h2 class="section-header">Highlights</h2>
+                <div class="highlights-scroll-row">
+                    <div class="highlight-card">
+                        <div class="highlight-img-area">
+                            <span class="highlight-placeholder">Highlight Image</span>
+                        </div>
+                        <div class="highlight-body">
+                            <p class="highlight-tag">Achievement</p>
+                            <h3 class="highlight-title">Started B.Tech CSE (AI/ML)</h3>
+                        </div>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-img-area">
+                            <span class="highlight-placeholder">Highlight Image</span>
+                        </div>
+                        <div class="highlight-body">
+                            <p class="highlight-tag">Project</p>
+                            <h3 class="highlight-title">Launched Urban Shield AI</h3>
+                        </div>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-img-area">
+                            <span class="highlight-placeholder">Highlight Image</span>
+                        </div>
+                        <div class="highlight-body">
+                            <p class="highlight-tag">Milestone</p>
+                            <h3 class="highlight-title">50+ DSA Problems Solved</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Footer Area -->
+            <footer class="site-footer section">
+                <div class="footer-quote-wrap">
+                    <p class="footer-quote">"Do so much work that it would be unreasonable for you to not be successful."</p>
+                    <p class="footer-attribution">&mdash; Alex Hormozi</p>
+                </div>
+                <div class="footer-copyright">
+                    &copy; 2026 Shafeeq Aadhil. Built with obsession. Bengaluru, India.
+                </div>
+            </footer>
             
         </main>
 
@@ -222,10 +347,10 @@
                     <li><a href="#hero" class="active"><span class="active-dot"></span>Hero</a></li>
                     <li><a href="#experience"><span class="active-dot"></span>Experience</a></li>
                     <li><a href="#projects"><span class="active-dot"></span>Projects</a></li>
-                    <li><a href="#"><span class="active-dot"></span>Open Source</a></li>
-                    <li><a href="#"><span class="active-dot"></span>Skills</a></li>
-                    <li><a href="#"><span class="active-dot"></span>Blog</a></li>
-                    <li><a href="#"><span class="active-dot"></span>Highlights</a></li>
+                    <li><a href="#opensource"><span class="active-dot"></span>Open Source</a></li>
+                    <li><a href="#skills"><span class="active-dot"></span>Skills</a></li>
+                    <li><a href="#blog"><span class="active-dot"></span>Blog</a></li>
+                    <li><a href="#highlights"><span class="active-dot"></span>Highlights</a></li>
                 </ul>
             </nav>
         </aside>
