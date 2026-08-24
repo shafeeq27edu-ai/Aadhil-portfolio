@@ -959,13 +959,13 @@ body::after {
         padding: 2rem 0;
     }
 }
-/ *   G i t H u b   P u l l s   L i n k   P o l i s h   * /  
- a [ h r e f * = " g i t h u b . c o m / p u l l s " ]   {  
-     c o l o r :   # a 1 a 1 a a ;  
-     t e x t - d e c o r a t i o n :   n o n e ;  
- }  
- a [ h r e f * = " g i t h u b . c o m / p u l l s " ] : h o v e r   {  
-     c o l o r :   # f f f f f f ;  
-     t e x t - d e c o r a t i o n :   u n d e r l i n e ;  
- }  
- 
+
+/* GitHub Pulls Link Polish */
+a[href*="github.com/pulls"] {
+  color: #a1a1aa;
+  text-decoration: none;
+}
+a[href*="github.com/pulls"]:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
