@@ -241,42 +241,48 @@
             <!-- GitHub Activity Section -->
             <section id="github-activity" class="section gh-section">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold section-header mb-0">GitHub Activity</h2>
+                  <h2 class="text-lg font-semibold section-header mb-0">GitHub Activity</h2>
                 </div>
+
                 <div class="rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 overflow-hidden card">
-                    <img src="https://ghchart.rshah.org/shafeeq27edu-ai" alt="GitHub contributions" style="width:100%; filter: grayscale(100%) brightness(0.7) contrast(1.2);">
+                  <img 
+                    src="https://ghchart.rshah.org/shafeeq27edu-ai" 
+                    alt="GitHub contributions" 
+                    style="width:100%; filter: grayscale(100%) brightness(0.7) contrast(1.2);"
+                  >
                 </div>
-                <div class="flex justify-between items-center mt-3 gh-stats-area">
-                    <div id="gh-stats" class="flex flex-wrap gap-3 gh-stats-row"></div>
-                    <div class="flex items-center gap-1 gh-legend">
-                        <span class="text-[10px] text-muted">Less</span>
-                        <div class="flex gap-[2px] gh-squares">
-                            <div class="w-[10px] h-[10px] rounded-sm bg-[#111]"></div>
-                            <div class="w-[10px] h-[10px] rounded-sm bg-[#333]"></div>
-                            <div class="w-[10px] h-[10px] rounded-sm bg-[#555]"></div>
-                            <div class="w-[10px] h-[10px] rounded-sm bg-[#777]"></div>
-                            <div class="w-[10px] h-[10px] rounded-sm bg-[#999]"></div>
-                        </div>
-                        <span class="text-[10px] text-muted">More</span>
+
+                <div class="flex justify-between items-center mt-3">
+                  <div id="gh-stats" class="flex flex-wrap gap-3"></div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[10px] text-muted">Less</span>
+                    <div class="flex gap-[2px]">
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#111]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#333]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#555]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#777]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#999]"></div>
                     </div>
+                    <span class="text-[10px] text-muted">More</span>
+                  </div>
                 </div>
             </section>
             
             <!-- Open Source Section -->
             <section id="opensource" class="section opensource-section">
-                <div class="flex justify-between items-center mb-4 os-header">
-                    <h2 class="text-lg font-semibold section-header mb-0">Open Source</h2>
-                    <span id="os-count" class="text-xs text-muted font-mono stats-mono">Loading...</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <h2 style="font-size:18px; font-weight:600; color:white;">Open Source</h2>
+                  <span id="os-count" style="font-size:12px; color:#52525b; font-family:monospace;">Loading...</span>
                 </div>
-                <div class="flex gap-2 mb-4 os-filters">
-                    <button class="os-tab bg-[#1a1a1a] text-white rounded-lg px-3 py-1 text-xs font-medium active" data-filter="all">All</button>
-                    <button class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs font-medium" data-filter="open">Open</button>
-                    <button class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs font-medium" data-filter="merged">Merged</button>
-                    <button class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs font-medium" data-filter="closed">Closed</button>
+                <div style="display:flex; gap:8px; margin-bottom:16px;">
+                  <button onclick="filterPRs('all')" id="tab-all" style="background:#1a1a1a; color:white; border:none; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">All</button>
+                  <button onclick="filterPRs('open')" id="tab-open" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Open</button>
+                  <button onclick="filterPRs('merged')" id="tab-merged" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Merged</button>
+                  <button onclick="filterPRs('closed')" id="tab-closed" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Closed</button>
                 </div>
                 <div id="os-list"></div>
-                <div class="mt-4 text-center os-view-all">
-                    <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" rel="noopener noreferrer" class="text-xs text-muted hover:text-white transition-colors">View All on GitHub &nearr;</a>
+                <div style="text-align:center; margin-top:16px;">
+                  <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" style="font-size:12px; color:#52525b; text-decoration:none;">View All on GitHub &nearr;</a>
                 </div>
             </section>
             
@@ -306,36 +312,37 @@
             
             <!-- The Grind (Codolio) Section -->
             <section id="grind" class="section grind-section">
-                <h2 class="section-header">The Grind</h2>
+                <h2 class="text-lg font-semibold mb-4 section-header">The Grind</h2>
+
                 <div class="rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 card">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg">&#127919;</span>
-                            <span class="text-white font-medium text-sm">Codolio</span>
-                        </div>
-                        <a href="https://codolio.com/profile/Shafeeq27" target="_blank" rel="noopener noreferrer" class="text-xs text-muted hover:text-white transition-colors flex items-center gap-1 view-profile-link">
-                            View Profile &nearr;
-                        </a>
+                  <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                      <span class="text-lg">&#127919;</span>
+                      <span class="text-white font-medium text-sm">Codolio</span>
                     </div>
-                    
-                    <div class="grid grid-cols-3 gap-4 mb-4 codolio-stats">
-                        <div class="c-stat-box">
-                            <div class="text-white font-bold text-lg font-mono stats-mono">50+</div>
-                            <div class="text-xs text-muted c-stat-label">Problems Solved</div>
-                        </div>
-                        <div class="c-stat-box">
-                            <div class="text-white font-bold text-lg font-mono stats-mono">Python 3</div>
-                            <div class="text-xs text-muted c-stat-label">Primary Lang</div>
-                        </div>
-                        <div class="c-stat-box">
-                            <div class="text-white font-bold text-lg font-mono stats-mono">LC + GFG</div>
-                            <div class="text-xs text-muted c-stat-label">Platforms</div>
-                        </div>
+                    <a href="https://codolio.com/profile/Shafeeq27" target="_blank" rel="noopener" class="text-xs text-muted hover:text-white transition-colors flex items-center gap-1">
+                      View Profile &nearr;
+                    </a>
+                  </div>
+                  
+                  <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <div class="text-white font-bold text-lg font-mono stats-mono">50+</div>
+                      <div class="text-xs text-muted">Problems Solved</div>
                     </div>
-                    
-                    <div class="border-t border-[#1a1a1a] pt-3">
-                        <p class="text-xs text-[#52525b] italic codolio-quote">"Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."</p>
+                    <div>
+                      <div class="text-white font-bold text-lg font-mono stats-mono">Python 3</div>
+                      <div class="text-xs text-muted">Primary Lang</div>
                     </div>
+                    <div>
+                      <div class="text-white font-bold text-lg font-mono stats-mono">LC + GFG</div>
+                      <div class="text-xs text-muted">Platforms</div>
+                    </div>
+                  </div>
+                  
+                  <div class="border-t border-[#1a1a1a] pt-3">
+                    <p class="text-xs text-[#52525b] italic codolio-quote">"Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."</p>
+                  </div>
                 </div>
             </section>
             
