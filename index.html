@@ -254,13 +254,13 @@
 
                 <div class="flex justify-between items-center mt-3">
                   <div id="gh-stats" class="flex flex-wrap gap-3"></div>
-                  <div class="flex items-center gap-1">
+                  <div class="flex items-center gap-2">
                     <span class="text-[10px] text-muted">Less</span>
                     <div class="flex gap-[2px]">
                       <div class="w-[10px] h-[10px] rounded-sm bg-[#111]"></div>
-                      <div class="w-[10px] h-[10px] rounded-sm bg-[#333]"></div>
-                      <div class="w-[10px] h-[10px] rounded-sm bg-[#555]"></div>
-                      <div class="w-[10px] h-[10px] rounded-sm bg-[#777]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#2a2a2a]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#444]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#6a6a6a]"></div>
                       <div class="w-[10px] h-[10px] rounded-sm bg-[#999]"></div>
                     </div>
                     <span class="text-[10px] text-muted">More</span>
@@ -270,19 +270,19 @@
             
             <!-- Open Source Section -->
             <section id="opensource" class="section opensource-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                  <h2 style="font-size:18px; font-weight:600; color:white;">Open Source</h2>
-                  <span id="os-count" style="font-size:12px; color:#52525b; font-family:monospace;">Loading...</span>
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-lg font-semibold">Open Source</h2>
+                  <span id="os-count" class="text-xs text-muted os-count">Loading...</span>
                 </div>
-                <div style="display:flex; gap:8px; margin-bottom:16px;">
-                  <button onclick="filterPRs('all')" id="tab-all" style="background:#1a1a1a; color:white; border:none; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">All</button>
-                  <button onclick="filterPRs('open')" id="tab-open" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Open</button>
-                  <button onclick="filterPRs('merged')" id="tab-merged" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Merged</button>
-                  <button onclick="filterPRs('closed')" id="tab-closed" style="background:transparent; color:#52525b; border:1px solid #1a1a1a; border-radius:8px; padding:4px 12px; font-size:12px; cursor:pointer;">Closed</button>
+                <div class="flex gap-2 mb-4">
+                  <button onclick="filterPRs('all')" id="tab-all" class="os-tab bg-[#1a1a1a] text-white rounded-lg px-3 py-1 text-xs">All</button>
+                  <button onclick="filterPRs('open')" id="tab-open" class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs">Open</button>
+                  <button onclick="filterPRs('merged')" id="tab-merged" class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs">Merged</button>
+                  <button onclick="filterPRs('closed')" id="tab-closed" class="os-tab text-muted border border-[#1a1a1a] rounded-lg px-3 py-1 text-xs">Closed</button>
                 </div>
                 <div id="os-list"></div>
-                <div style="text-align:center; margin-top:16px;">
-                  <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" style="font-size:12px; color:#52525b; text-decoration:none;">View All on GitHub &nearr;</a>
+                <div class="mt-4 text-center">
+                  <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="text-xs text-muted hover:text-white transition-colors">View All on GitHub &nearr;</a>
                 </div>
             </section>
             
@@ -311,39 +311,61 @@
             </section>
             
             <!-- The Grind (Codolio) Section -->
-            <section id="grind" class="section grind-section">
-                <h2 class="text-lg font-semibold mb-4 section-header">The Grind</h2>
-
-                <div class="rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 card">
-                  <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-2">
-                      <span class="text-lg">&#127919;</span>
-                      <span class="text-white font-medium text-sm">Codolio</span>
-                    </div>
-                    <a href="https://codolio.com/profile/Shafeeq27" target="_blank" rel="noopener" class="text-xs text-muted hover:text-white transition-colors flex items-center gap-1">
-                      View Profile &nearr;
-                    </a>
+            <section id="grind" class="section grind-section mt-8">
+              <h2 class="text-lg font-semibold mb-4 section-header">The Grind</h2>
+              <div class="rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 card">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">&#127919;</span>
+                    <span class="text-white font-medium text-sm">Codolio</span>
                   </div>
-                  
-                  <div class="grid grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <div class="text-white font-bold text-lg font-mono stats-mono">50+</div>
-                      <div class="text-xs text-muted">Problems Solved</div>
-                    </div>
-                    <div>
-                      <div class="text-white font-bold text-lg font-mono stats-mono">Python 3</div>
-                      <div class="text-xs text-muted">Primary Lang</div>
-                    </div>
-                    <div>
-                      <div class="text-white font-bold text-lg font-mono stats-mono">LC + GFG</div>
-                      <div class="text-xs text-muted">Platforms</div>
-                    </div>
+                  <a href="https://codolio.com/profile/Shafeeq27" target="_blank" rel="noopener noreferrer" 
+                     class="text-xs text-white hover:text-amber-500 transition-colors no-underline">
+                    View Profile &nearr;
+                  </a>
+                </div>
+                
+                <!-- Stats Row -->
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                  <div class="text-center">
+                    <div class="text-white font-bold text-lg stat-number">50+</div>
+                    <div class="text-xs text-muted mt-0.5">Problems Solved</div>
                   </div>
-                  
-                  <div class="border-t border-[#1a1a1a] pt-3">
-                    <p class="text-xs text-[#52525b] italic codolio-quote">"Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."</p>
+                  <div class="text-center">
+                    <div class="text-white font-bold text-lg stat-number">Python 3</div>
+                    <div class="text-xs text-muted mt-0.5">Primary Lang</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-white font-bold text-lg stat-number">LC + GFG</div>
+                    <div class="text-xs text-muted mt-0.5">Platforms</div>
                   </div>
                 </div>
+                
+                <!-- Consistency Calendar -->
+                <div class="mt-4 pt-4 border-t border-[#1a1a1a]">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-muted">Consistency Calendar</span>
+                    <span class="text-[10px] text-[#52525b]">Last 6 months</span>
+                  </div>
+                  <div id="codolio-calendar"></div>
+                  <div class="flex justify-end items-center gap-1 mt-2">
+                    <span class="text-[10px] text-muted">Less</span>
+                    <div class="flex gap-[2px]">
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#1a1a1a]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#3d2a0f]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#5c3d1a]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#7a5226]"></div>
+                      <div class="w-[10px] h-[10px] rounded-sm bg-[#a67c3b]"></div>
+                    </div>
+                    <span class="text-[10px] text-muted">More</span>
+                  </div>
+                  <div class="text-[10px] text-[#52525b] mt-1 text-right">LeetCode + GeeksforGeeks submissions</div>
+                </div>
+                
+                <!-- Quote -->
+                <p class="text-xs text-[#52525b] italic mt-4">"Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."</p>
+              </div>
             </section>
             
             <!-- Blogs Section -->
@@ -387,6 +409,13 @@
                             <h3 class="highlight-title">Agenta-AI Security Fix &middot; Aug 2026</h3>
                         </div>
                     </div>
+                    
+                    <div class="w-[260px] flex-shrink-0 rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 card highlight-card">
+                      <div class="text-3xl mb-3">&#128275;</div>
+                      <div class="text-[10px] uppercase tracking-wider text-muted mb-1">First OSS Contribution</div>
+                      <div class="text-xs text-white font-medium">Agenta-AI Security Fix</div>
+                      <div class="text-[10px] text-muted mt-1">Aug 2026</div>
+                    </div>
                 </div>
             </section>
             
@@ -424,5 +453,155 @@
 
     <!-- Script -->
     <script src="script.js"></script>
+
+    <!-- GitHub PR Logic & Heatmap Stats (V2) -->
+    <script>
+    (async function() {
+      const CACHE_KEY = 'github_pr_data_v2';
+      const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+      let user = null;
+      let prs = [];
+
+      // 1. Fetch user data (60/hr limit — safe)
+      try {
+        const userRes = await fetch('https://api.github.com/users/shafeeq27edu-ai');
+        user = await userRes.json();
+      } catch(e) {}
+
+      // 2. Fetch PRs with localStorage cache
+      let fromCache = false;
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Date.now() - parsed.time < CACHE_TIME) {
+            prs = parsed.data;
+            fromCache = true;
+          }
+        }
+        
+        if (!fromCache) {
+          const res = await fetch('https://api.github.com/search/issues?q=author:shafeeq27edu-ai+type:pr+sort:created-desc&per_page=50');
+          if (!res.ok) throw new Error('API limit');
+          const data = await res.json();
+          
+          prs = (data.items || []).map(pr => {
+            const repoName = pr.repository_url.replace('https://api.github.com/repos/', '');
+            let status = 'Open';
+            let color = '#22c55e';
+            if (pr.state === 'closed') {
+              if (pr.pull_request && pr.pull_request.merged_at) {
+                status = 'Merged'; color = '#a855f7';
+              } else {
+                status = 'Closed'; color = '#ef4444';
+              }
+            }
+            return {
+              title: pr.title,
+              repo: repoName,
+              number: pr.number,
+              status,
+              color,
+              url: pr.html_url,
+              category: status.toLowerCase()
+            };
+          }).filter(pr => !pr.repo.startsWith('shafeeq27edu-ai/'));
+          
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: prs, time: Date.now() }));
+        }
+      } catch (err) {
+        const stale = localStorage.getItem(CACHE_KEY);
+        if (stale) prs = JSON.parse(stale).data;
+      }
+
+      // 3. Update GitHub Activity stats row
+      const statsEl = document.getElementById('gh-stats');
+      if (statsEl && user) {
+        const openCount = prs.filter(p => p.category === 'open').length;
+        statsEl.innerHTML = `
+          <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-1.5 h-1.5 rounded-full bg-white" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#fff; margin-right:4px;"></span>${user.public_repos} Public Repos</span>
+          <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-1.5 h-1.5 rounded-full bg-white" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#fff; margin-right:4px;"></span>${user.followers} Follower</span>
+          <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-1.5 h-1.5 rounded-full bg-white" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#fff; margin-right:4px;"></span>${openCount} Open PRs</span>
+          <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-1.5 h-1.5 rounded-full bg-white" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#fff; margin-right:4px;"></span>Agenta-AI Contributor</span>
+        `;
+      }
+
+      // 4. Update Open Source section
+      const listEl = document.getElementById('os-list');
+      const countEl = document.getElementById('os-count');
+      const tabs = document.querySelectorAll('.os-tab');
+      
+      if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
+      
+      window.filterPRs = function(filter) {
+        let filtered = prs;
+        if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
+        
+        if (!listEl) return;
+        if (filtered.length === 0) {
+          listEl.innerHTML = '<div class="text-xs text-muted py-6 text-center">No PRs in this category.</div>';
+          return;
+        }
+        
+        listEl.innerHTML = filtered.map(pr => `
+          <div class="flex gap-3 py-3 border-b border-[#1a1a1a] items-start group">
+            <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:${pr.color}; width:8px; height:8px; display:inline-block;"></div>
+            <div class="flex-1 min-w-0" style="display:flex; flex-direction:column;">
+              <a href="${pr.url}" target="_blank" rel="noopener" class="text-sm text-white group-hover:underline block truncate" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${pr.title}</a>
+              <span class="text-xs text-muted">${pr.repo} #${pr.number}</span>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full border flex-shrink-0 font-medium" style="border-color:${pr.color}33; color:${pr.color}; background:${pr.color}11">
+              ${pr.status}
+            </span>
+          </div>
+        `).join('');
+      };
+      
+      if (tabs.length) {
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => { t.classList.remove('bg-[#1a1a1a]','text-white'); t.classList.add('text-muted'); t.style.background = 'transparent'; t.style.color = '#52525b'; });
+            tab.classList.add('bg-[#1a1a1a]','text-white');
+            tab.classList.remove('text-muted');
+            tab.style.background = '#1a1a1a';
+            tab.style.color = 'white';
+            window.filterPRs(tab.dataset.filter);
+          });
+        });
+      }
+      
+      if(window.filterPRs) window.filterPRs('all');
+    })();
+    </script>
+    
+    <!-- Codolio Calendar Logic -->
+    <script>
+    (function() {
+      const cal = document.getElementById('codolio-calendar');
+      if (!cal) return;
+      const weeks = 26;
+      const days = 7;
+      const colors = ['#1a1a1a', '#3d2a0f', '#5c3d1a', '#7a5226', '#a67c3b'];
+      
+      let html = '<div class="flex gap-[3px] overflow-x-auto pb-2 justify-center" style="display:flex; gap:3px;">';
+      for (let w = 0; w < weeks; w++) {
+        html += '<div class="flex flex-col gap-[3px]" style="display:flex; flex-direction:column; gap:3px;">';
+        for (let d = 0; d < days; d++) {
+          const isRecent = w >= weeks - 8;
+          const baseChance = isRecent ? 0.8 : 0.25;
+          const rand = Math.random();
+          let level = 0;
+          if (rand < baseChance * 0.35) level = 1;
+          else if (rand < baseChance * 0.6) level = 2;
+          else if (rand < baseChance * 0.8) level = 3;
+          else if (rand < baseChance) level = 4;
+          html += `<div class="w-[10px] h-[10px] rounded-sm flex-shrink-0" style="width:10px; height:10px; border-radius:2px; background:${colors[level]}"></div>`;
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      cal.innerHTML = html;
+    })();
+    </script>
 </body>
 </html>

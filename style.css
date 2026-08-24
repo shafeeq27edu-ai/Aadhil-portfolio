@@ -969,3 +969,28 @@ a[href*="github.com/pulls"]:hover {
   color: #ffffff;
   text-decoration: underline;
 }
+
+/* Monospace Numbers */
+.stat-number, .experience-date, .os-count {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+/* Film Grain Overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* Smooth Card Hover */
+.card, .project-card, .exp-card, .highlight-card {
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.card:hover, .project-card:hover, .exp-card:hover, .highlight-card:hover {
+  border-color: #333;
+  transform: translateY(-2px);
+}
