@@ -987,10 +987,14 @@ body::after {
 }
 
 /* Smooth Card Hover */
-.card, .project-card, .exp-card, .highlight-card {
+.card, .project-card, .exp-card, .highlight-card, .rounded-xl {
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
-.card:hover, .project-card:hover, .exp-card:hover, .highlight-card:hover {
+.card:hover, .project-card:hover, .exp-card:hover, .highlight-card:hover, .rounded-xl:hover {
   border-color: #333;
   transform: translateY(-2px);
+}
+
+.stat-number, .experience-date, .os-count, .mono {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
 }
