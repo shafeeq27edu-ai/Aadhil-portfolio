@@ -247,50 +247,52 @@
               <div class="gh-heatmap-wrap">
                 <div class="gh-heatmap-header">
                   <span>Contribution Graph</span>
-                  <span>Last 52 weeks</span>
+                  <span id="gh-total-contribs">Last 52 weeks</span>
                 </div>
-                <div class="gh-heatmap" id="gh-heatmap"></div>
+                <div class="gh-heatmap-container">
+                  <div class="gh-heatmap-months" id="gh-heatmap-months"></div>
+                  <div class="gh-heatmap-body">
+                    <div class="gh-heatmap-days">
+                      <span>Mon</span>
+                      <span>Wed</span>
+                      <span>Fri</span>
+                    </div>
+                    <div class="gh-heatmap" id="gh-heatmap"></div>
+                  </div>
+                </div>
+                <div class="gh-legend">
+                  <span>Less</span>
+                  <div class="gh-legend-dots">
+                    <div style="background:#171717"></div>
+                    <div style="background:#3d2a0b"></div>
+                    <div style="background:#6b4a16"></div>
+                    <div style="background:#b07824"></div>
+                    <div style="background:#f59e0b"></div>
+                  </div>
+                  <span>More</span>
+                </div>
               </div>
             
-              <!-- Only top 3 repos -->
-              <div class="gh-repo-list">
-                <a href="https://github.com/Agenta-AI/agenta" class="gh-repo" target="_blank">
-                  <div>
-                    <div class="gh-repo-name">agenta-ai/agenta</div>
-                    <div class="gh-repo-desc">Open-source LLM evaluation platform</div>
-                  </div>
-                  <div class="gh-repo-meta">
-                    <span class="gh-lang"><span class="gh-dot" style="background:#f59e0b"></span>Python</span>
-                    <span>⭐ 1.2k</span>
-                  </div>
-                </a>
-            
-                <a href="https://github.com/shafeeq27edu-ai/UrbanSheild-2.0-AI-" class="gh-repo" target="_blank">
-                  <div>
-                    <div class="gh-repo-name">UrbanSheild-2.0-AI-</div>
-                    <div class="gh-repo-desc">Zone-level flood & heat risk prediction</div>
-                  </div>
-                  <div class="gh-repo-meta">
-                    <span class="gh-lang"><span class="gh-dot" style="background:#3b82f6"></span>TypeScript</span>
-                    <span>⭐ 84</span>
-                  </div>
-                </a>
-            
-                <a href="https://github.com/shafeeq27edu-ai/Trackr" class="gh-repo" target="_blank">
-                  <div>
-                    <div class="gh-repo-name">Trackr</div>
-                    <div class="gh-repo-desc">Computer vision analytics platform</div>
-                  </div>
-                  <div class="gh-repo-meta">
-                    <span class="gh-lang"><span class="gh-dot" style="background:#10b981"></span>Python</span>
-                    <span>⭐ 42</span>
-                  </div>
-                </a>
+              <!-- GitHub Stats Cards -->
+              <div class="gh-stats-header" style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
+                  <span class="year-pill" style="display:inline-flex; align-items:center; gap:6px;">
+                    <span class="gh-dot" style="background:#f59e0b"></span> Agenta-AI Contributor
+                  </span>
               </div>
+              <div id="gh-stats" class="gh-stats-grid"></div>
             
-              <a href="https://github.com/shafeeq27edu-ai?tab=repositories" class="gh-more" target="_blank">
-                View all 17 repositories →
-              </a>
+              <!-- Old repo list replaced by dynamic Pinned Repositories section -->
+            </section>
+
+            <!-- Pinned Repositories Section -->
+            <section id="pinned" class="section pinned-section">
+                <h2 class="section-header">Pinned Repositories</h2>
+                <div id="pinned-repos-grid" class="projects-grid">
+                    <div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1 / -1;">Loading repositories...</div>
+                </div>
+                <div class="pinned-view-all" style="text-align: center; margin-top: 24px;">
+                    <button id="view-all-repos-btn" class="btn-view-all">View All Repositories &nearr;</button>
+                </div>
             </section>
             
             <style>
@@ -300,15 +302,48 @@
             .gh-heatmap-wrap {
               background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 12px;
               padding: 20px; margin-bottom: 16px;
+              position: relative; /* for tooltips */
             }
             .gh-heatmap-header {
               display: flex; justify-content: space-between; font-size: 12px;
               color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
             }
-            .gh-heatmap {
-              display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px;
+            .gh-heatmap-container { display: flex; flex-direction: column; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
+            .gh-heatmap-months { display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; margin-left: 23px; }
+            .gh-heatmap-months span { font-size: 10px; color: #525252; grid-column: span 4; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
+            .gh-heatmap-body { display: flex; gap: 8px; }
+            .gh-heatmap-days { display: grid; grid-template-rows: repeat(7, 1fr); gap: 3px; font-size: 10px; color: #525252; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; width: 15px; }
+            .gh-heatmap-days span:nth-child(1) { grid-row: 2; }
+            .gh-heatmap-days span:nth-child(2) { grid-row: 4; }
+            .gh-heatmap-days span:nth-child(3) { grid-row: 6; }
+            .gh-heatmap { display: grid; grid-template-columns: repeat(52, 1fr); grid-template-rows: repeat(7, 1fr); gap: 3px; }
+            .gh-heatmap .day-square { border-radius: 2px; aspect-ratio: 1/1; width: 10px; height: 10px; position: relative; transition: transform 0.15s; }
+            .gh-heatmap .day-square:hover { transform: scale(1.3); z-index: 10; border: 1px solid rgba(255,255,255,0.2); }
+            
+            .gh-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 12px; }
+            .gh-legend span { font-size: 10px; color: #525252; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
+            .gh-legend-dots { display: flex; gap: 3px; }
+            .gh-legend-dots div { width: 10px; height: 10px; border-radius: 2px; }
+
+            /* Tooltip styles */
+            .gh-tooltip {
+              position: absolute;
+              background: #1a1a1a;
+              border: 1px solid #333;
+              color: #e5e5e5;
+              font-size: 11px;
+              padding: 6px 10px;
+              border-radius: 6px;
+              pointer-events: none;
+              white-space: nowrap;
+              opacity: 0;
+              transition: opacity 0.2s;
+              z-index: 100;
+              font-family: 'SF Mono', Monaco, monospace;
+              transform: translate(-50%, -100%);
+              margin-top: -8px;
             }
-            .gh-heatmap div { border-radius: 2px; aspect-ratio: 1/1; }
+            .gh-tooltip.visible { opacity: 1; }
             
             .gh-repo-list { display: flex; flex-direction: column; gap: 10px; }
             .gh-repo {
@@ -323,23 +358,59 @@
             .gh-lang { display: flex; align-items: center; gap: 4px; }
             .gh-dot { width: 8px; height: 8px; border-radius: 50%; }
             
-            .gh-more {
-              display: inline-block; margin-top: 14px; font-size: 13px;
-              color: #a3a3a3; text-decoration: none; transition: color 0.2s;
-            }
-            .gh-more:hover { color: #e5e5e5; }
-            </style>
             
-            <script>
-            // Sparse gray heatmap (no green)
-            const ghColors = ['#171717','#171717','#171717','#171717','#171717','#262626','#404040','#525252'];
-            const ghGrid = document.getElementById('gh-heatmap');
-            for(let i=0;i<182;i++){
-              const d=document.createElement('div');
-              d.style.background = ghColors[Math.floor(Math.random()*ghColors.length)];
-              ghGrid.appendChild(d);
+            /* Pinned Repos Grid & Cards */
+            .pinned-repo-card {
+                display: flex; flex-direction: column; justify-content: space-between;
+                padding: 20px; text-decoration: none;
             }
-            </script>
+            .pinned-repo-title { font-weight: 600; font-size: 16px; color: #fafafa; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+            .pinned-repo-desc { font-size: 13px; color: #a3a3a3; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
+            .pinned-repo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: #737373; font-family: 'SF Mono', Monaco, monospace; }
+            .pinned-repo-meta span { display: flex; align-items: center; gap: 4px; }
+            
+            /* Modal Styles */
+            .repo-modal-overlay {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8);
+                backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center;
+                opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px;
+            }
+            .repo-modal-overlay.active { opacity: 1; pointer-events: auto; }
+            .repo-modal {
+                background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; width: 100%; max-width: 600px;
+                max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                transform: translateY(20px); transition: transform 0.3s; overflow: hidden;
+            }
+            .repo-modal-overlay.active .repo-modal { transform: translateY(0); }
+            .repo-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #1a1a1a; }
+            .repo-modal-header h3 { font-size: 18px; font-weight: 600; color: #fafafa; margin: 0; }
+            .repo-modal-close { background: none; border: none; color: #737373; font-size: 24px; cursor: pointer; transition: color 0.2s; line-height: 1; }
+            .repo-modal-close:hover { color: #fafafa; }
+            .repo-modal-search { padding: 16px 24px; border-bottom: 1px solid #1a1a1a; }
+            .repo-modal-search input { 
+                width: 100%; background: #111; border: 1px solid #262626; border-radius: 8px; 
+                padding: 10px 14px; color: #fafafa; font-size: 14px; outline: none; transition: border-color 0.2s;
+            }
+            .repo-modal-search input:focus { border-color: #52525b; }
+            .repo-modal-list { flex-grow: 1; overflow-y: auto; padding: 12px 24px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+            
+            /* Inherit gh-more styling if any leftover uses it */
+            .gh-more { display: inline-block; margin-top: 14px; font-size: 13px; color: #a3a3a3; text-decoration: none; transition: color 0.2s; }
+            .gh-more:hover { color: #e5e5e5; }
+            
+            /* Stats Grid */
+            .gh-stats-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+            .gh-stat-card {
+              background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 10px; padding: 14px 16px;
+              flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 6px;
+              transition: border-color 0.2s;
+            }
+            .gh-stat-card:hover { border-color: #333; }
+            .gh-stat-header { display: flex; align-items: center; gap: 8px; color: #a3a3a3; }
+            .gh-stat-header svg { width: 14px; height: 14px; }
+            .gh-stat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'SF Mono', Monaco, monospace; }
+            .gh-stat-value { font-weight: 600; font-size: 20px; color: #fafafa; line-height: 1; }
+            </style>
             
             <section id="opensource" class="section opensource-section">
                 <!-- Open Source -->
@@ -578,15 +649,32 @@
                     <li><a href="#hero" class="active"><span class="active-dot"></span>Hero</a></li>
                     <li><a href="#experience"><span class="active-dot"></span>Experience</a></li>
                     <li><a href="#projects"><span class="active-dot"></span>Projects</a></li>
-                    <li><a href="#github-activity"><span class="active-dot"></span>GitHub</a></li>
+                    <li><a href="#github"><span class="active-dot"></span>GitHub</a></li>
+                    <li><a href="#pinned"><span class="active-dot"></span>Pinned Repos</a></li>
                     <li><a href="#opensource"><span class="active-dot"></span>Open Source</a></li>
                     <li><a href="#skills"><span class="active-dot"></span>Skills</a></li>
-                    <li><a href="#grind"><span class="active-dot"></span>Codolio</a></li>
+                    <li><a href="#leetcode"><span class="active-dot"></span>Codolio</a></li>
                     <li><a href="#blog"><span class="active-dot"></span>Blog</a></li>
                     <li><a href="#highlights"><span class="active-dot"></span>Highlights</a></li>
                 </ul>
             </nav>
         </aside>
+    </div>
+    
+    <!-- Repositories Modal -->
+    <div id="repo-modal-overlay" class="repo-modal-overlay">
+        <div class="repo-modal">
+            <div class="repo-modal-header">
+                <h3>All Repositories</h3>
+                <button id="repo-modal-close" class="repo-modal-close">&times;</button>
+            </div>
+            <div class="repo-modal-search">
+                <input type="text" id="repo-search-input" placeholder="Search repositories...">
+            </div>
+            <div id="repo-modal-list" class="repo-modal-list">
+                <div class="text-xs text-[#52525b] py-8 text-center">Loading...</div>
+            </div>
+        </div>
     </div>
 
     <!-- Script -->
@@ -636,14 +724,42 @@
       if (user) {
         const openCount = prs.filter(p => p.category === 'open').length;
         const mergedCount = prs.filter(p => p.category === 'merged').length;
-        statsEl.innerHTML = `
-          <span class="flex items-center gap-1.5 text-xs text-[#a1a1aa]"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>${user.public_repos} Public Repos</span>
-          <span class="flex items-center gap-1.5 text-xs text-[#a1a1aa]"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>${user.followers} Follower</span>
-          <span class="flex items-center gap-1.5 text-xs text-[#a1a1aa]"><span class="w-1.5 h-1.5 rounded-full bg-[#22c55e]"></span>${openCount} Open PRs</span>
-          <span class="flex items-center gap-1.5 text-xs text-[#a1a1aa]"><span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>${mergedCount} Merged</span>
-          <span class="flex items-center gap-1.5 text-xs text-[#a1a1aa]"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>Agenta-AI Contributor</span>
-        `;
-      } else { statsEl.innerHTML = '<span class="text-xs text-[#52525b]">Stats unavailable</span>'; }
+        if (statsEl) {
+          statsEl.innerHTML = `
+            <div class="gh-stat-card">
+              <div class="gh-stat-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="gh-stat-title">Public Repos</span>
+              </div>
+              <div class="gh-stat-value">${user.public_repos}</div>
+            </div>
+            
+            <div class="gh-stat-card">
+              <div class="gh-stat-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="gh-stat-title">Followers</span>
+              </div>
+              <div class="gh-stat-value">${user.followers}</div>
+            </div>
+            
+            <div class="gh-stat-card">
+              <div class="gh-stat-header">
+                <svg style="color:#22c55e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+                <span class="gh-stat-title">Open PRs</span>
+              </div>
+              <div class="gh-stat-value">${openCount}</div>
+            </div>
+            
+            <div class="gh-stat-card">
+              <div class="gh-stat-header">
+                <svg style="color:#a855f7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
+                <span class="gh-stat-title">Merged PRs</span>
+              </div>
+              <div class="gh-stat-value">${mergedCount}</div>
+            </div>
+          `;
+        }
+      } else { if (statsEl) statsEl.innerHTML = '<span class="text-xs text-[#52525b]">Stats unavailable</span>'; }
       
       if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
       
