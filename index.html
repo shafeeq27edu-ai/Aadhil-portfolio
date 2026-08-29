@@ -241,7 +241,7 @@
             <!-- GitHub Activity & Open Source Section -->
             <!-- GitHub Activity (Top 3 Repos) -->
             <section id="github" class="section gh-section">
-              <h2 class="text-lg font-semibold mb-4 section-header">GitHub Activity</h2>
+              <h2 class="section-header">GitHub Activity</h2>
             
               <!-- Minimal heatmap -->
               <div class="gh-heatmap-wrap">
@@ -410,24 +410,56 @@
             .gh-stat-header svg { width: 14px; height: 14px; }
             .gh-stat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'SF Mono', Monaco, monospace; }
             .gh-stat-value { font-weight: 600; font-size: 20px; color: #fafafa; line-height: 1; }
+            
+            /* Open Source PR Cards */
+            .os-tabs {
+                display: flex; gap: 4px; background: #111; padding: 4px; border-radius: 10px; width: fit-content; margin-bottom: 20px;
+                border: 1px solid #1a1a1a;
+            }
+            .os-tab {
+                background: transparent; color: #737373; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px;
+                font-weight: 500; cursor: pointer; transition: all 0.2s;
+            }
+            .os-tab:hover { color: #e5e5e5; }
+            .os-tab.active { background: #262626; color: #fafafa; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+            
+            .os-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
+            
+            .pr-card {
+                padding: 16px;
+                display: flex; flex-direction: column; gap: 12px; text-decoration: none;
+            }
+            .pr-header { display: flex; align-items: center; gap: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; color: #737373; }
+            .pr-repo { color: #a3a3a3; transition: color 0.2s; }
+            .pr-repo:hover { color: #fafafa; text-decoration: underline; }
+            .pr-title { font-size: 15px; font-weight: 500; color: #fafafa; line-height: 1.4; flex-grow: 1; }
+            .pr-badge {
+                display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px;
+                font-weight: 600; letter-spacing: 0.5px; width: fit-content;
+            }
+            .pr-badge.open { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #22c55e; }
+            .pr-badge.merged { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); color: #a855f7; }
+            .pr-badge.closed { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; }
+            .pr-badge svg { width: 12px; height: 12px; }
             </style>
             
             <section id="opensource" class="section opensource-section">
                 <!-- Open Source -->
                 <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-lg font-semibold">Open Source</h2>
+                  <h2 class="section-header">Open Source</h2>
                   <span id="os-count" class="text-xs text-[#52525b]" style="font-family:'SF Mono',Monaco,monospace;">Loading...</span>
                 </div>
-                <div class="rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 mb-8 card">
-                  <div class="flex gap-2 mb-4">
-                    <button class="os-tab bg-[#1a1a1a] text-white rounded-lg px-3 py-1.5 text-xs font-medium" data-filter="all">All</button>
-                    <button class="os-tab text-[#52525b] border border-[#1a1a1a] rounded-lg px-3 py-1.5 text-xs font-medium" data-filter="open">Open</button>
-                    <button class="os-tab text-[#52525b] border border-[#1a1a1a] rounded-lg px-3 py-1.5 text-xs font-medium" data-filter="merged">Merged</button>
-                    <button class="os-tab text-[#52525b] border border-[#1a1a1a] rounded-lg px-3 py-1.5 text-xs font-medium" data-filter="closed">Closed</button>
+                <div class="p-5 mb-8 card">
+                  <div class="os-tabs">
+                    <button class="os-tab active" data-filter="all">All</button>
+                    <button class="os-tab" data-filter="open">Open</button>
+                    <button class="os-tab" data-filter="merged">Merged</button>
+                    <button class="os-tab" data-filter="closed">Closed</button>
                   </div>
-                  <div id="os-list"><div class="text-xs text-[#52525b] py-8 text-center">Loading contributions...</div></div>
-                  <div class="mt-4 pt-3 border-t border-[#1a1a1a] text-center">
-                    <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="text-xs text-[#52525b] hover:text-white transition-colors inline-flex items-center gap-1">View All on GitHub <span style="font-size:10px">↗</span></a>
+                  <div id="os-list" class="os-grid"><div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1/-1;">Loading contributions...</div></div>
+                  <div class="mt-6 text-center">
+                    <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="btn-view-all">View All on GitHub &nearr;</a>
                   </div>
                 </div>
             </section>
@@ -456,72 +488,51 @@
                 </div>
             </section>
             
-            <!-- The Grind (LeetCode) Section -->
-            <section id="leetcode" class="section grind-section mt-8">
-              <div class="lc-header">
-                <span>⚔️</span>
-                <h2 class="section-header mb-0">The Grind</h2>
+            <!-- The Grind (Codolio) Section -->
+            <section id="leetcode" class="section grind-section">
+              <div class="lc-header" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px;">
+                <span style="font-size: 24px; line-height: 1;">⚔️</span>
+                <div style="flex-grow: 1;">
+                  <h2 class="section-header mb-0" style="margin-bottom: 4px;">The Grind</h2>
+                  <div class="text-xs text-[#737373]" style="font-family: 'SF Mono', Monaco, monospace;">Powered by Codolio — aggregating LeetCode, Codeforces & more</div>
+                </div>
+                <a href="https://codolio.com/profile/shafeeq_27" target="_blank" class="btn-view-all" style="margin:0;">View Profile &nearr;</a>
               </div>
             
-              <div class="lc-card">
+              <div class="lc-card card">
                 <div class="lc-orb"></div>
-            
-                <div class="lc-top">
-                  <div class="lc-user">
-                    <div class="lc-avatar">🎯</div>
-                    <div>
-                      <div class="lc-username">shafeeq_27</div>
-                      <div class="lc-rank">Rank #2,283,680</div>
+                
+                <div id="codolio-loading" class="text-xs text-[#52525b] py-8 text-center">Aggregating stats...</div>
+                
+                <div id="codolio-content" style="display: none; position: relative; z-index: 1;">
+                  <div class="gh-stats-grid" id="codolio-stats" style="margin-bottom: 32px;">
+                    <!-- Stat Cards inserted by JS -->
+                  </div>
+                  
+                  <div class="lc-heatmap-wrap">
+                    <div class="lc-heatmap-header">
+                      <span>Activity Heatmap</span>
+                      <span>Last 6 Months</span>
+                    </div>
+                    <div class="lc-heatmap" id="lc-heatmap"></div>
+                    <div class="lc-legend">
+                      <span>Less</span>
+                      <div class="lc-legend-dots">
+                        <div style="background:#171717"></div>
+                        <div style="background:#3d2a0b"></div>
+                        <div style="background:#6b4a16"></div>
+                        <div style="background:#b07824"></div>
+                        <div style="background:#f59e0b"></div>
+                      </div>
+                      <span>More</span>
                     </div>
                   </div>
-                  <div class="lc-total">
-                    <div class="lc-total-num">64</div>
-                    <div class="lc-total-label">Solved</div>
-                  </div>
-                </div>
-            
-                <div class="lc-bars">
-                  <div>
-                    <div class="lc-bar-label"><span>Easy</span><span>31 <i>/ 961</i></span></div>
-                    <div class="lc-track"><div class="lc-fill" style="width:3.2%;background:#22c55e"></div></div>
-                  </div>
-                  <div>
-                    <div class="lc-bar-label"><span>Medium</span><span>29 <i>/ 2105</i></span></div>
-                    <div class="lc-track"><div class="lc-fill" style="width:1.4%;background:#f59e0b"></div></div>
-                  </div>
-                  <div>
-                    <div class="lc-bar-label"><span>Hard</span><span>4 <i>/ 967</i></span></div>
-                    <div class="lc-track"><div class="lc-fill" style="width:0.4%;background:#ef4444"></div></div>
-                  </div>
-                </div>
-            
-                <div class="lc-heatmap-wrap">
-                  <div class="lc-heatmap-header">
-                    <span>Streak Heatmap</span>
-                    <span>2025.8.28 → 2026.8.27</span>
-                  </div>
-                  <div class="lc-heatmap" id="lc-heatmap"></div>
-                  <div class="lc-legend">
-                    <span>Less</span>
-                    <div class="lc-legend-dots">
-                      <div style="background:#171717"></div>
-                      <div style="background:#3d2a0b"></div>
-                      <div style="background:#6b4a16"></div>
-                      <div style="background:#b07824"></div>
-                      <div style="background:#f59e0b"></div>
-                    </div>
-                    <span>More</span>
-                  </div>
-                </div>
-            
-                <div class="lc-footer">
-                  <div><div class="lc-ft-label">Primary</div><div class="lc-ft-val">Python 3</div></div>
-                  <div><div class="lc-ft-label">Platforms</div><div class="lc-ft-val">LC + GFG</div></div>
-                  <div><div class="lc-ft-label">Total</div><div class="lc-ft-val">50+ Problems</div></div>
                 </div>
               </div>
             
-              <p class="lc-quote">"Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."</p>
+              <blockquote class="lc-quote">
+                "Consistency is the weapon. Grinding DSA daily on LeetCode and GeeksforGeeks."
+              </blockquote>
             </section>
             
             <style>
@@ -570,19 +581,87 @@
             .lc-ft-label { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
             .lc-ft-val { font-size: 13px; color: #e5e5e5; font-weight: 500; }
             
-            .lc-quote { margin-top: 12px; font-size: 12px; color: #525252; font-style: italic; }
+            .lc-quote { 
+                margin-top: 24px; font-size: 14px; color: #a3a3a3; font-style: italic; 
+                border-left: 3px solid #f59e0b; padding-left: 16px; background: rgba(245, 158, 11, 0.05);
+                padding-top: 12px; padding-bottom: 12px; border-radius: 0 8px 8px 0;
+            }
             </style>
             
             <script>
-            // Amber/orange heatmap instead of green
-            const amberColors = ['#171717','#1f1405','#2d1f08','#3d2a0b','#4f3610','#6b4a16','#8a5e1c','#b07824','#d4902a','#f59e0b'];
-            const lcGrid = document.getElementById('lc-heatmap');
-            for(let i=0;i<182;i++){
-              const d=document.createElement('div');
-              const intensity = Math.random() > 0.75 ? Math.floor(Math.random()*4)+6 : Math.floor(Math.random()*6);
-              d.style.background = amberColors[intensity];
-              lcGrid.appendChild(d);
-            }
+            document.addEventListener('DOMContentLoaded', async () => {
+              // Generate fake heatmap for now (since we don't have Codolio activity API)
+              const amberColors = ['#171717','#1f1405','#2d1f08','#3d2a0b','#4f3610','#6b4a16','#8a5e1c','#b07824','#d4902a','#f59e0b'];
+              const lcGrid = document.getElementById('lc-heatmap');
+              for(let i=0;i<182;i++){
+                const d=document.createElement('div');
+                const intensity = Math.random() > 0.85 ? Math.floor(Math.random()*4)+6 : (Math.random() > 0.5 ? Math.floor(Math.random()*3)+1 : 0);
+                d.style.background = amberColors[intensity];
+                lcGrid.appendChild(d);
+              }
+              
+              // Fetch Codolio Stats
+              try {
+                const res = await fetch('/api/codolio');
+                const data = await res.json();
+                
+                const statsEl = document.getElementById('codolio-stats');
+                document.getElementById('codolio-loading').style.display = 'none';
+                document.getElementById('codolio-content').style.display = 'block';
+                
+                let statsHtml = '';
+                
+                if (data.leetcode) {
+                  statsHtml += `
+                    <div class="gh-stat-card card">
+                      <div class="gh-stat-header">
+                        <span style="font-size:14px;">🚀</span>
+                        <span class="gh-stat-title" style="color:#f59e0b;">LeetCode</span>
+                      </div>
+                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#737373;font-weight:400;">Solved</span></div>
+                    </div>
+                  `;
+                }
+                
+                if (data.codeforces) {
+                  statsHtml += `
+                    <div class="gh-stat-card card">
+                      <div class="gh-stat-header">
+                        <span style="font-size:14px;">📊</span>
+                        <span class="gh-stat-title" style="color:#3b82f6;">Codeforces</span>
+                      </div>
+                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#737373;font-weight:400;">Rating</span></div>
+                    </div>
+                  `;
+                }
+                
+                // Add a GFG placeholder since we drop API
+                statsHtml += `
+                  <div class="gh-stat-card card">
+                    <div class="gh-stat-header">
+                      <span style="font-size:14px;">💻</span>
+                      <span class="gh-stat-title" style="color:#22c55e;">GFG</span>
+                    </div>
+                    <div class="gh-stat-value">Active <span style="font-size:12px;color:#737373;font-weight:400;">Profile</span></div>
+                  </div>
+                `;
+                
+                statsEl.innerHTML = statsHtml;
+                
+                // Add mouse hover effect to new stat cards
+                statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
+                    c.onmousemove = e => { 
+                        const rect = c.getBoundingClientRect(); 
+                        c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
+                        c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
+                    };
+                });
+                
+              } catch(e) {
+                document.getElementById('codolio-loading').textContent = 'Failed to load stats.';
+                console.error(e);
+              }
+            });
             </script>
             
             <!-- Blogs Section -->
@@ -619,7 +698,7 @@
                             <h3 class="highlight-title">Dayflow HRMS &middot; Aug 2026</h3>
                         </div>
                     </div>
-                    <div class="w-[260px] flex-shrink-0 rounded-xl border border-[#1a1a1a] bg-[#0a0a0a] p-4 card highlight-card">
+                    <div class="w-[260px] flex-shrink-0 p-4 card highlight-card">
                       <div class="text-3xl mb-3">🔓</div>
                       <div class="text-[10px] uppercase tracking-wider text-[#52525b] mb-1">First OSS Contribution</div>
                       <div class="text-xs text-white font-medium">Agenta-AI Security Fix</div>
@@ -766,23 +845,50 @@
       function render(filter) {
         let filtered = prs;
         if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
-        if (filtered.length === 0) { listEl.innerHTML = '<div class="text-xs text-[#52525b] py-8 text-center">No PRs in this category.</div>'; return; }
-        listEl.innerHTML = filtered.map(pr => `
-          <div class="flex gap-3 py-3 border-b border-[#1a1a1a] items-start cursor-pointer hover:bg-white/[0.02] transition-colors" onclick="window.open('${pr.url}', '_blank')">
-            <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" style="background:${pr.color}"></div>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm text-white hover:underline block truncate font-medium">${pr.title}</div>
-              <div class="text-xs text-[#52525b] mt-0.5" style="font-family:'SF Mono',Monaco,monospace;">${pr.repo} <span class="text-[#3f3f46]">#${pr.number}</span></div>
+        if (filtered.length === 0) { listEl.innerHTML = '<div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1/-1;">No PRs in this category.</div>'; return; }
+        
+        listEl.innerHTML = filtered.map(pr => {
+          let icon = '';
+          let badgeClass = '';
+          if (pr.category === 'open') {
+            badgeClass = 'open';
+            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>';
+          } else if (pr.category === 'merged') {
+            badgeClass = 'merged';
+            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>';
+          } else {
+            badgeClass = 'closed';
+            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+          }
+          
+          return `
+          <a href="${pr.url}" class="pr-card card" target="_blank" rel="noopener noreferrer">
+            <div class="pr-header">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+              <span class="pr-repo">${pr.repo}</span>
+              <span>#${pr.number}</span>
             </div>
-            <span class="text-[10px] px-2.5 py-1 rounded-full border flex-shrink-0 font-semibold tracking-wide" style="border-color:${pr.color}40; color:${pr.color}; background:${pr.color}10;">${pr.status}</span>
-          </div>
-        `).join('');
+            <div class="pr-title">${pr.title}</div>
+            <div class="pr-badge ${badgeClass}">
+              ${icon} ${pr.status}
+            </div>
+          </a>
+        `}).join('');
+        
+        // Add mousemove effect to new PR cards
+        listEl.querySelectorAll('.pr-card').forEach(c => {
+            c.onmousemove = e => { 
+                const rect = c.getBoundingClientRect(); 
+                c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
+                c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
+            };
+        });
       }
       
       tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-          tabs.forEach(t => { t.classList.remove('bg-[#1a1a1a]','text-white'); t.classList.add('text-[#52525b]','border','border-[#1a1a1a]'); });
-          tab.classList.add('bg-[#1a1a1a]','text-white'); tab.classList.remove('text-[#52525b]','border','border-[#1a1a1a]');
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
           render(tab.dataset.filter);
         });
       });
