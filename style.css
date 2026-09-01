@@ -35,12 +35,15 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Single merged body rule (Bug 2 fix) */
 body {
     background-color: var(--bg-color);
-    color: var(--text-secondary); /* Base body color is now #737373 */
+    color: var(--text-secondary); /* Base body color is #737373 — NOT white */
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -89,7 +92,9 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     padding-bottom: 5rem;
 }
 
-/* Utility Classes */
+/* ==========================================
+   Utility Classes (Bug 1/9 fix — replacing Tailwind)
+   ========================================== */
 .mb-0 { margin-bottom: 0; }
 .mb-4 { margin-bottom: 1rem; }
 .mt-2 { margin-top: 0.5rem; }
@@ -99,6 +104,78 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 .flex-1 { flex: 1; }
 .min-w-0 { min-width: 0; }
 
+/* Loading / Error placeholder (Bug 9 fix) */
+.loading-placeholder {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 2rem 0;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+/* Blog Subscribe Button (Bug 7 fix) */
+.btn-subscribe {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--border-color);
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    border: 1px solid #262626;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    margin-top: 0.75rem;
+}
+.btn-subscribe:hover {
+    background-color: #222222;
+    border-color: var(--border-hover);
+}
+
+/* Open Source section header row */
+.os-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.os-section-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+/* Open Source card wrapper */
+.os-card-wrapper {
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* View All center wrapper */
+.os-view-all-center {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+/* Codolio section header layout */
+.lc-section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.lc-section-header-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+.lc-section-header-body {
+    flex-grow: 1;
+}
+.lc-section-header-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
 .section-header {
     font-size: 1.125rem;
     font-weight: 600;
@@ -106,7 +183,9 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     color: var(--text-primary);
 }
 
-/* Hero Section */
+/* ==========================================
+   Hero Section
+   ========================================== */
 .hero-section {
     display: flex;
     flex-direction: column;
@@ -115,12 +194,22 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     position: relative;
 }
 
+/* Animated gradient hero banner (Upgrade 1) */
 .hero-banner {
     width: 100%;
     height: 120px;
-    background: url('Pictures/banner.png') center/cover no-repeat, linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+    background: url('Pictures/banner.png') center/cover no-repeat, linear-gradient(135deg, #0a0a0a 0%, #111111 25%, #0d0d0d 50%, #151515 75%, #0a0a0a 100%);
+    background-size: cover, 300% 300%;
+    animation: bannerShift 12s ease infinite;
     border-radius: var(--radius-xl);
     margin-bottom: -36px; /* Pull profile pic up */
+}
+
+@keyframes bannerShift {
+    0%, 100% { background-position: center, 0% 50%; }
+    25% { background-position: center, 100% 0%; }
+    50% { background-position: center, 100% 100%; }
+    75% { background-position: center, 0% 100%; }
 }
 
 .hero-profile {
@@ -234,7 +323,9 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     border-color: var(--border-hover);
 }
 
-/* Experience Section */
+/* ==========================================
+   Experience Section
+   ========================================== */
 .exp-list {
     display: flex;
     flex-direction: column;
@@ -346,7 +437,9 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     background-color: var(--border-color);
 }
 
-/* Projects Section */
+/* ==========================================
+   Projects Section
+   ========================================== */
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -374,7 +467,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 .project-initials {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #1a1a1a; /* large muted text */
+    color: #1a1a1a;
     letter-spacing: -0.05em;
 }
 
@@ -511,7 +604,9 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     text-decoration: underline;
 }
 
-/* GitHub Activity Section */
+/* ==========================================
+   GitHub Activity Section
+   ========================================== */
 .gh-header, .os-header {
     display: flex;
     justify-content: space-between;
@@ -559,7 +654,6 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     border-radius: 2px;
 }
 
-/* Gray-green squares for tactical look */
 .sq-0 { background-color: #1a1a1a; }
 .sq-1 { background-color: #2b3a32; }
 .sq-2 { background-color: #3b5745; }
@@ -587,54 +681,6 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     margin-bottom: 1rem;
 }
 
-.os-tab {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    cursor: pointer;
-}
-
-body {
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    line-height: 1.6;
-    overflow-x: hidden;
-    position: relative;
-}
-
-/* Film Grain Overlay */
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-}
-
-/* Card Hover Spotlight & Standardization */
-.card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.card:hover {
-    background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.03), transparent 40%);
-    border-color: var(--border-hover);
-    transform: translateY(-2px);
-}
-
-.os-tab.active {
-    background-color: var(--border-color);
-    color: var(--text-primary);
-}
-
 .os-list {
     display: flex;
     flex-direction: column;
@@ -652,7 +698,34 @@ body::after {
     border-bottom: none;
 }
 
-/* Skills (Arsenal) Section */
+/* Film Grain Overlay (single instance — Bug 3 fix) */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+}
+
+/* Card Hover Spotlight & Standardization (single instance — Bug 4 fix) */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+    background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.03), transparent 40%);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   Skills (Arsenal) Section
+   ========================================== */
 .skills-row {
     display: flex;
     flex-wrap: wrap;
@@ -671,13 +744,17 @@ body::after {
     font-size: 0.75rem;
 }
 
+/* Skill pill amber glow hover (Upgrade 4) */
 .skill-pill:hover {
     transform: translateY(-2px);
-    border-color: var(--border-hover);
+    border-color: rgba(245, 158, 11, 0.4);
     color: var(--text-primary);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.15), 0 0 4px rgba(245, 158, 11, 0.1);
 }
 
-/* Codolio (Grind) Section */
+/* ==========================================
+   Codolio (Grind) Section
+   ========================================== */
 .codolio-card {
     padding: 1rem;
 }
@@ -755,20 +832,58 @@ body::after {
     font-style: italic;
 }
 
-/* Blogs Section */
+/* ==========================================
+   Blogs Section (Upgrade 3 — polished empty state)
+   ========================================== */
 .blog-empty-state {
-    padding: 2rem;
+    padding: 2.5rem 2rem;
     text-align: center;
     border-radius: var(--radius-xl);
-    border: 1px dashed var(--border-color);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-empty-state::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
 }
 
 .blog-empty-state p {
     font-size: 0.875rem;
     color: var(--text-muted);
+    position: relative;
+    z-index: 1;
 }
 
-/* Highlights Section */
+.blog-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.blog-empty-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================
+   Highlights Section
+   ========================================== */
 .highlights-scroll-row {
     display: flex;
     gap: 1rem;
@@ -817,7 +932,15 @@ body::after {
     color: var(--text-primary);
 }
 
-/* Footer & Quote */
+.highlight-date {
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* ==========================================
+   Footer & Quote
+   ========================================== */
 .footer-quote-wrap {
     padding: 4rem 0;
     text-align: center;
@@ -848,7 +971,9 @@ body::after {
     color: var(--text-muted);
 }
 
-/* Right Sidebar INDEX */
+/* ==========================================
+   Right Sidebar INDEX
+   ========================================== */
 .sidebar {
     position: sticky;
     top: 33vh;
@@ -912,7 +1037,23 @@ body::after {
     background-color: var(--accent-amber);
 }
 
-/* Responsive */
+/* ==========================================
+   Scroll Reveal Animations (Upgrade 2)
+   ========================================== */
+.section-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================
+   Responsive
+   ========================================== */
 @media (max-width: 1024px) {
     .sidebar {
         display: none;
@@ -929,7 +1070,7 @@ body::after {
     .main-content {
         max-width: 100%;
         padding-bottom: 2rem;
-        gap: 2rem; /* Reduced section spacing to 2rem */
+        gap: 2rem;
     }
     
     .projects-grid {
@@ -938,6 +1079,16 @@ body::after {
     
     .footer-quote-wrap {
         padding: 2rem 0;
+    }
+
+    .exp-card {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .exp-right {
+        align-items: flex-start;
+        text-align: left;
     }
 }
 
@@ -951,31 +1102,7 @@ a[href*="github.com/pulls"]:hover {
   text-decoration: underline;
 }
 
-/* Monospace Numbers */
-.stat-number, .experience-date, .os-count {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-}
-
-/* Film Grain Overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.4;
-}
-
-/* Smooth Card Hover */
-.card, .project-card, .exp-card, .highlight-card, .rounded-xl {
-  transition: border-color 0.15s ease, transform 0.15s ease;
-}
-.card:hover, .project-card:hover, .exp-card:hover, .highlight-card:hover, .rounded-xl:hover {
-  border-color: #333;
-  transform: translateY(-2px);
-}
-
+/* Monospace Numbers (single definition — Bug 6 fix) */
 .stat-number, .experience-date, .os-count, .mono {
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
 }

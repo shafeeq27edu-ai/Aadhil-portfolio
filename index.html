@@ -67,7 +67,7 @@
             </section>
             
             <!-- Experience Section -->
-            <section id="experience" class="section experience-section">
+            <section id="experience" class="section experience-section section-reveal">
                 <h2 class="section-header">Experiences</h2>
                 
                 <div class="exp-list">
@@ -115,7 +115,7 @@
             </section>
 
             <!-- Projects Section -->
-            <section id="projects" class="section projects-section">
+            <section id="projects" class="section projects-section section-reveal">
                 <h2 class="section-header">Projects</h2>
                 
                 <div class="projects-grid">
@@ -240,7 +240,7 @@
             
             <!-- GitHub Activity & Open Source Section -->
             <!-- GitHub Activity (Top 3 Repos) -->
-            <section id="github" class="section gh-section">
+            <section id="github" class="section gh-section section-reveal">
               <h2 class="section-header">GitHub Activity</h2>
             
               <!-- Minimal heatmap -->
@@ -274,7 +274,7 @@
               </div>
             
               <!-- GitHub Stats Cards -->
-              <div class="gh-stats-header" style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
+              <div style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
                   <span class="year-pill" style="display:inline-flex; align-items:center; gap:6px;">
                     <span class="gh-dot" style="background:#f59e0b"></span> Agenta-AI Contributor
                   </span>
@@ -285,10 +285,10 @@
             </section>
 
             <!-- Pinned Repositories Section -->
-            <section id="pinned" class="section pinned-section">
+            <section id="pinned" class="section pinned-section section-reveal">
                 <h2 class="section-header">Pinned Repositories</h2>
                 <div id="pinned-repos-grid" class="projects-grid">
-                    <div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1 / -1;">Loading repositories...</div>
+                    <div class="loading-placeholder">Loading repositories...</div>
                 </div>
                 <div class="pinned-view-all" style="text-align: center; margin-top: 24px;">
                     <button id="view-all-repos-btn" class="btn-view-all">View All Repositories &nearr;</button>
@@ -444,28 +444,28 @@
             .pr-badge svg { width: 12px; height: 12px; }
             </style>
             
-            <section id="opensource" class="section opensource-section">
+            <section id="opensource" class="section opensource-section section-reveal">
                 <!-- Open Source -->
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="section-header">Open Source</h2>
-                  <span id="os-count" class="text-xs text-[#52525b]" style="font-family:'SF Mono',Monaco,monospace;">Loading...</span>
+                <div class="os-section-header">
+                  <h2 class="section-header" style="margin-bottom: 0;">Open Source</h2>
+                  <span id="os-count" class="os-section-count">Loading...</span>
                 </div>
-                <div class="p-5 mb-8 card">
+                <div class="os-card-wrapper card">
                   <div class="os-tabs">
                     <button class="os-tab active" data-filter="all">All</button>
                     <button class="os-tab" data-filter="open">Open</button>
                     <button class="os-tab" data-filter="merged">Merged</button>
                     <button class="os-tab" data-filter="closed">Closed</button>
                   </div>
-                  <div id="os-list" class="os-grid"><div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1/-1;">Loading contributions...</div></div>
-                  <div class="mt-6 text-center">
+                  <div id="os-list" class="os-grid"><div class="loading-placeholder">Loading contributions...</div></div>
+                  <div class="os-view-all-center">
                     <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="btn-view-all">View All on GitHub &nearr;</a>
                   </div>
                 </div>
             </section>
             
             <!-- Arsenal (Skills) Section -->
-            <section id="skills" class="section skills-section">
+            <section id="skills" class="section skills-section section-reveal">
                 <h2 class="section-header">Arsenal</h2>
                 <div class="skills-row">
                     <span class="skill-pill">&#128013; Python</span>
@@ -489,12 +489,12 @@
             </section>
             
             <!-- The Grind (Codolio) Section -->
-            <section id="leetcode" class="section grind-section">
-              <div class="lc-header" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px;">
-                <span style="font-size: 24px; line-height: 1;">⚔️</span>
-                <div style="flex-grow: 1;">
-                  <h2 class="section-header mb-0" style="margin-bottom: 4px;">The Grind</h2>
-                  <div class="text-xs text-[#737373]" style="font-family: 'SF Mono', Monaco, monospace;">Powered by Codolio — aggregating LeetCode, Codeforces & more</div>
+            <section id="leetcode" class="section grind-section section-reveal">
+              <div class="lc-section-header">
+                <span class="lc-section-header-icon">⚔️</span>
+                <div class="lc-section-header-body">
+                  <h2 class="section-header" style="margin-bottom: 4px;">The Grind</h2>
+                  <div class="lc-section-header-subtitle">Powered by Codolio — aggregating LeetCode, Codeforces &amp; more</div>
                 </div>
                 <a href="https://codolio.com/profile/shafeeq_27" target="_blank" class="btn-view-all" style="margin:0;">View Profile &nearr;</a>
               </div>
@@ -502,7 +502,7 @@
               <div class="lc-card card">
                 <div class="lc-orb"></div>
                 
-                <div id="codolio-loading" class="text-xs text-[#52525b] py-8 text-center">Aggregating stats...</div>
+                <div id="codolio-loading" class="loading-placeholder">Aggregating stats...</div>
                 
                 <div id="codolio-content" style="display: none; position: relative; z-index: 1;">
                   <div class="gh-stats-grid" id="codolio-stats" style="margin-bottom: 32px;">
@@ -665,16 +665,18 @@
             </script>
             
             <!-- Blogs Section -->
-            <section id="blog" class="section blog-section">
+            <section id="blog" class="section blog-section section-reveal">
                 <h2 class="section-header">Blogs</h2>
                 <div class="blog-empty-state">
-                    <p>No blog posts yet. Coming soon.</p>
-                    <button class="px-4 py-2 rounded-lg bg-[#1a1a1a] text-xs text-white hover:bg-[#222] transition-colors border border-[#222] mt-2">Subscribe</button>
+                    <div class="blog-empty-icon">✍️</div>
+                    <div class="blog-empty-title">Coming Soon</div>
+                    <p>Deep dives on AI systems, security research, and building in public.</p>
+                    <button class="btn-subscribe">Subscribe for Updates</button>
                 </div>
             </section>
             
             <!-- Highlights Section -->
-            <section id="highlights" class="section highlights-section">
+            <section id="highlights" class="section highlights-section section-reveal">
                 <h2 class="section-header">Highlights</h2>
                 <div class="highlights-scroll-row">
                     <div class="highlight-card card">
@@ -698,11 +700,13 @@
                             <h3 class="highlight-title">Dayflow HRMS &middot; Aug 2026</h3>
                         </div>
                     </div>
-                    <div class="w-[260px] flex-shrink-0 p-4 card highlight-card">
-                      <div class="text-3xl mb-3">🔓</div>
-                      <div class="text-[10px] uppercase tracking-wider text-[#52525b] mb-1">First OSS Contribution</div>
-                      <div class="text-xs text-white font-medium">Agenta-AI Security Fix</div>
-                      <div class="text-[10px] text-[#52525b] mt-1">Aug 2026</div>
+                    <div class="highlight-card card">
+                        <div class="highlight-emoji-area">&#128275;</div>
+                        <div class="highlight-body">
+                            <p class="highlight-tag stats-mono">First OSS Contribution</p>
+                            <h3 class="highlight-title">Agenta-AI Security Fix</h3>
+                            <p class="highlight-date">Aug 2026</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -751,7 +755,7 @@
                 <input type="text" id="repo-search-input" placeholder="Search repositories...">
             </div>
             <div id="repo-modal-list" class="repo-modal-list">
-                <div class="text-xs text-[#52525b] py-8 text-center">Loading...</div>
+                <div class="loading-placeholder">Loading...</div>
             </div>
         </div>
     </div>
@@ -838,14 +842,14 @@
             </div>
           `;
         }
-      } else { if (statsEl) statsEl.innerHTML = '<span class="text-xs text-[#52525b]">Stats unavailable</span>'; }
+      } else { if (statsEl) statsEl.innerHTML = '<span class="loading-placeholder">Stats unavailable</span>'; }
       
       if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
       
       function render(filter) {
         let filtered = prs;
         if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
-        if (filtered.length === 0) { listEl.innerHTML = '<div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1/-1;">No PRs in this category.</div>'; return; }
+        if (filtered.length === 0) { listEl.innerHTML = '<div class="loading-placeholder">No PRs in this category.</div>'; return; }
         
         listEl.innerHTML = filtered.map(pr => {
           let icon = '';

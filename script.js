@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 console.error("Failed to load repos:", err);
-                pinnedGrid.innerHTML = '<div class="text-xs text-[#52525b] py-8 text-center" style="grid-column: 1 / -1;">Failed to load repositories.</div>';
+                pinnedGrid.innerHTML = '<div class="loading-placeholder">Failed to load repositories.</div>';
             });
     }
 
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderModalList(reposToRender) {
         if (!modalList) return;
         if (reposToRender.length === 0) {
-            modalList.innerHTML = '<div class="text-xs text-[#52525b] py-8 text-center">No repositories found.</div>';
+            modalList.innerHTML = '<div class="loading-placeholder">No repositories found.</div>';
             return;
         }
         modalList.innerHTML = reposToRender.map(r => getRepoCardHTML(r)).join('');
@@ -239,5 +239,20 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             renderModalList(filtered);
         });
+    }
+
+    // --- Scroll Reveal Animations (Upgrade 2) ---
+    const revealSections = document.querySelectorAll('.section-reveal');
+    if (revealSections.length > 0) {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    revealObserver.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, { root: null, rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+
+        revealSections.forEach(section => revealObserver.observe(section));
     }
 });
