@@ -590,27 +590,34 @@
             
             <script>
             document.addEventListener('DOMContentLoaded', async () => {
-              // Generate fake heatmap for now (since we don't have Codolio activity API)
-              const amberColors = ['#171717','#1f1405','#2d1f08','#3d2a0b','#4f3610','#6b4a16','#8a5e1c','#b07824','#d4902a','#f59e0b'];
               const lcGrid = document.getElementById('lc-heatmap');
-              for(let i=0;i<182;i++){
-                const d=document.createElement('div');
-                const intensity = Math.random() > 0.85 ? Math.floor(Math.random()*4)+6 : (Math.random() > 0.5 ? Math.floor(Math.random()*3)+1 : 0);
-                d.style.background = amberColors[intensity];
-                lcGrid.appendChild(d);
-              }
+              const codolioLoading = document.getElementById('codolio-loading');
+              const codolioContent = document.getElementById('codolio-content');
+              const statsEl = document.getElementById('codolio-stats');
               
-              // Fetch Codolio Stats
+              const amberColors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
+              
+              const fallbackHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #737373; gap: 12px; width: 100%;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                    <span style="font-size: 13px;">Activity syncing...</span>
+                </div>
+              `;
+
               try {
                 const res = await fetch('/api/codolio');
                 const data = await res.json();
                 
-                const statsEl = document.getElementById('codolio-stats');
-                document.getElementById('codolio-loading').style.display = 'none';
-                document.getElementById('codolio-content').style.display = 'block';
+                if (data.fallback || data.error) {
+                    codolioLoading.innerHTML = fallbackHTML;
+                    return;
+                }
                 
+                codolioLoading.style.display = 'none';
+                codolioContent.style.display = 'block';
+                
+                // Build stats
                 let statsHtml = '';
-                
                 if (data.leetcode) {
                   statsHtml += `
                     <div class="gh-stat-card card">
@@ -622,7 +629,6 @@
                     </div>
                   `;
                 }
-                
                 if (data.codeforces) {
                   statsHtml += `
                     <div class="gh-stat-card card">
@@ -634,21 +640,8 @@
                     </div>
                   `;
                 }
-                
-                // Add a GFG placeholder since we drop API
-                statsHtml += `
-                  <div class="gh-stat-card card">
-                    <div class="gh-stat-header">
-                      <span style="font-size:14px;">💻</span>
-                      <span class="gh-stat-title" style="color:#22c55e;">GFG</span>
-                    </div>
-                    <div class="gh-stat-value">Active <span style="font-size:12px;color:#737373;font-weight:400;">Profile</span></div>
-                  </div>
-                `;
-                
                 statsEl.innerHTML = statsHtml;
                 
-                // Add mouse hover effect to new stat cards
                 statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
                     c.onmousemove = e => { 
                         const rect = c.getBoundingClientRect(); 
@@ -657,9 +650,45 @@
                     };
                 });
                 
+                // Render LeetCode Heatmap
+                const cal = data.leetcode ? data.leetcode.calendar : {};
+                
+                // LeetCode's calendar keys are unix timestamps in seconds
+                // We want to generate ~182 days (26 weeks x 7 days) ending today
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const startDate = new Date(today);
+                startDate.setDate(today.getDate() - 181);
+                
+                let dayIter = new Date(startDate);
+                while(dayIter <= today) {
+                    const d = document.createElement('div');
+                    // Find count for this day by checking timestamps that fall within this day
+                    const dayStart = dayIter.getTime() / 1000;
+                    const dayEnd = dayStart + 86400;
+                    
+                    let count = 0;
+                    for (const ts in cal) {
+                        if (ts >= dayStart && ts < dayEnd) {
+                            count += cal[ts];
+                        }
+                    }
+                    
+                    let colorIdx = 0;
+                    if (count > 0 && count <= 2) colorIdx = 1;
+                    else if (count > 2 && count <= 4) colorIdx = 2;
+                    else if (count > 4 && count <= 6) colorIdx = 3;
+                    else if (count > 6) colorIdx = 4;
+                    
+                    d.style.background = amberColors[colorIdx];
+                    lcGrid.appendChild(d);
+                    
+                    dayIter.setDate(dayIter.getDate() + 1);
+                }
+
               } catch(e) {
-                document.getElementById('codolio-loading').textContent = 'Failed to load stats.';
                 console.error(e);
+                codolioLoading.innerHTML = fallbackHTML;
               }
             });
             </script>

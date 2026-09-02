@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       return res.status(200).json(cache);
     }
 
-    // LeetCode GraphQL request for user stats
+    // LeetCode GraphQL request for user stats & calendar
     const lcQuery = `
       query getUserProfile($username: String!) {
         matchedUser(username: $username) {
@@ -26,6 +26,9 @@ export default async function handler(req, res) {
               count
             }
           }
+        }
+        userCalendar(year: 2026) {
+          submissionCalendar
         }
       }
     `;
@@ -53,11 +56,20 @@ export default async function handler(req, res) {
           const item = stats.find(s => s.difficulty === diff);
           return item ? item.count : 0;
         };
+        
+        let calendar = {};
+        if (lcData.data.userCalendar && lcData.data.userCalendar.submissionCalendar) {
+          try {
+             calendar = JSON.parse(lcData.data.userCalendar.submissionCalendar);
+          } catch(e) {}
+        }
+        
         leetcode = {
           totalSolved: getCount('All'),
           easySolved: getCount('Easy'),
           mediumSolved: getCount('Medium'),
           hardSolved: getCount('Hard'),
+          calendar
         };
       }
     } else if (lcRes.status === 'fulfilled' && !lcRes.value.ok) {

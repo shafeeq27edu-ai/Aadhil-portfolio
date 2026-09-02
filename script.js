@@ -42,6 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const ghMonths = document.getElementById('gh-heatmap-months');
     const totalSpan = document.getElementById('gh-total-contribs');
     
+    const fallbackHTML = `
+        <div style="grid-column: span 52; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; color: #737373; gap: 12px; grid-row: span 7;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+            <span style="font-size: 13px;">Activity syncing...</span>
+        </div>
+    `;
+
     if (ghHeatmap && ghMonths) {
         // Create tooltip element
         const tooltip = document.createElement('div');
@@ -52,7 +59,10 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch('/api/github')
             .then(res => res.json())
             .then(data => {
-                if(data.error) throw new Error(data.error);
+                if(data.error || data.fallback || !data.weeks || data.weeks.length === 0) {
+                    ghHeatmap.innerHTML = fallbackHTML;
+                    return;
+                }
                 
                 if (totalSpan) totalSpan.textContent = `${data.total || 0} contributions in the last year`;
 
@@ -110,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 console.error("Failed to load GitHub heatmap:", err);
-                ghHeatmap.innerHTML = '<div style="grid-column: span 52; color: #737373; font-size: 12px;">Failed to load data. Check /api/github endpoint.</div>';
+                ghHeatmap.innerHTML = fallbackHTML;
             });
     }
     
