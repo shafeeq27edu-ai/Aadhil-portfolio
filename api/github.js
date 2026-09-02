@@ -1,14 +1,20 @@
+// In-memory cache to survive hot reloads/serverless invocations if possible
+let cache = null;
+let lastFetchTime = 0;
+const CACHE_TTL = 3600 * 1000; // 1 hour
+
 export default async function handler(req, res) {
-  // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const username = 'shafeeq27edu-ai';
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
+  // If token is missing, we log it but return fallback to prevent UI crash
   if (!token) {
-    return res.status(500).json({ error: 'GitHub token is not configured on the server.' });
+    console.warn('GITHUB_TOKEN is missing. Returning fallback data.');
+    return returnFallback(res);
   }
 
   const query = `
@@ -30,6 +36,12 @@ export default async function handler(req, res) {
   `;
 
   try {
+    const now = Date.now();
+    if (cache && (now - lastFetchTime < CACHE_TTL)) {
+      res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+      return res.status(200).json(cache);
+    }
+
     const response = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: {
@@ -43,7 +55,7 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      throw new Error(`GitHub API returned ${response.status}`);
+      throw new Error(`GitHub API returned ${response.status}: ${await response.text()}`);
     }
 
     const data = await response.json();
@@ -52,18 +64,34 @@ export default async function handler(req, res) {
       throw new Error(data.errors[0].message);
     }
 
-    // Set cache headers: cache on CDN for 3 hours (10800s), stale-while-revalidate for 12 hours
-    res.setHeader('Cache-Control', 'public, s-maxage=10800, stale-while-revalidate=43200');
-    
-    // Extract the weeks array
     const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
-    
-    // We can also extract total contributions if needed
     const total = data.data.user.contributionsCollection.contributionCalendar.totalContributions;
 
-    return res.status(200).json({ total, weeks });
+    const result = { total, weeks, fallback: false };
+    
+    // Update cache
+    cache = result;
+    lastFetchTime = Date.now();
+
+    res.setHeader('Cache-Control', 'public, s-maxage=10800, stale-while-revalidate=43200');
+    return res.status(200).json(result);
   } catch (error) {
-    console.error('Error fetching GitHub contributions:', error);
-    return res.status(500).json({ error: 'Failed to fetch contributions' });
+    console.error('Error fetching GitHub contributions:', error.message || error);
+    // If we have stale cache, serve it
+    if (cache) {
+      console.log('Serving stale cache due to error');
+      return res.status(200).json(cache);
+    }
+    // Otherwise serve clean empty state
+    return returnFallback(res);
   }
+}
+
+function returnFallback(res) {
+  res.setHeader('Cache-Control', 'no-cache');
+  return res.status(200).json({ 
+    total: 0, 
+    weeks: [],
+    fallback: true
+  });
 }
