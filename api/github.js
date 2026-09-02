@@ -20,6 +20,9 @@ export default async function handler(req, res) {
   const query = `
     query($userName:String!) {
       user(login: $userName){
+        followers {
+          totalCount
+        }
         contributionsCollection {
           contributionCalendar {
             totalContributions
@@ -64,10 +67,12 @@ export default async function handler(req, res) {
       throw new Error(data.errors[0].message);
     }
 
-    const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
-    const total = data.data.user.contributionsCollection.contributionCalendar.totalContributions;
+    const userNode = data.data.user;
+    const followers = userNode.followers.totalCount;
+    const weeks = userNode.contributionsCollection.contributionCalendar.weeks;
+    const total = userNode.contributionsCollection.contributionCalendar.totalContributions;
 
-    const result = { total, weeks, fallback: false };
+    const result = { total, followers, weeks, fallback: false };
     
     // Update cache
     cache = result;
@@ -90,7 +95,8 @@ export default async function handler(req, res) {
 function returnFallback(res) {
   res.setHeader('Cache-Control', 'no-cache');
   return res.status(200).json({ 
-    total: 0, 
+    total: 0,
+    followers: 0,
     weeks: [],
     fallback: true
   });
