@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     }
 
     // LeetCode GraphQL request for user stats & calendar
+    const currentYear = new Date().getFullYear();
     const lcQuery = `
       query getUserProfile($username: String!) {
         matchedUser(username: $username) {
@@ -27,7 +28,7 @@ export default async function handler(req, res) {
             }
           }
         }
-        userCalendar(year: 2026) {
+        userCalendar(year: ${currentYear}) {
           submissionCalendar
         }
       }

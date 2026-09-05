@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>shafeeq aadhil.</title>
+    <title>Shafeeq Aadhil — Developer Portfolio</title>
+    <meta name="description" content="Shafeeq Aadhil — 18-year-old developer from Bengaluru building AI systems, contributing to open source, and grinding competitive programming. B.Tech CSE (AI/ML) @ Kalvium × Yenepoya.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Shafeeq Aadhil — Developer Portfolio">
+    <meta property="og:description" content="Independent builder shipping AI systems. Open source contributor. Competitive programmer. B.Tech CSE (AI/ML) @ Kalvium × Yenepoya.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/234775624?v=4">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Shafeeq Aadhil — Developer Portfolio">
+    <meta name="twitter:description" content="Independent builder shipping AI systems. Open source contributor. Competitive programmer.">
+    <meta name="twitter:image" content="https://avatars.githubusercontent.com/u/234775624?v=4">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +37,7 @@
             <section id="hero" class="section hero-section">
                 <div class="hero-banner"></div>
                 <div class="hero-profile">
-                    <img src="https://avatars.githubusercontent.com/u/234775624?v=4" alt="Shafeeq Aadhil" class="profile-img">
+                    <img src="https://avatars.githubusercontent.com/u/234775624?v=4" alt="Shafeeq Aadhil" class="profile-img" onerror="this.onerror=null;this.style.display='flex';this.style.alignItems='center';this.style.justifyContent='center';this.style.fontSize='1.5rem';this.style.color='#737373';this.outerHTML='<div class=&quot;profile-img&quot; style=&quot;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#737373;width:72px;height:72px;&quot;>SA</div>';">
                 </div>
                 <h1 class="hero-name">shafeeq aadhil. 18. bengaluru.</h1>
                 
@@ -295,154 +311,7 @@
                 </div>
             </section>
             
-            <style>
-            #github { max-width: 720px; margin: 0 auto; padding-top: 10px; }
-            #github h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #fafafa; }
-            
-            .gh-heatmap-wrap {
-              background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 12px;
-              padding: 20px; margin-bottom: 16px;
-              position: relative; /* for tooltips */
-            }
-            .gh-heatmap-header {
-              display: flex; justify-content: space-between; font-size: 12px;
-              color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
-            }
-            .gh-heatmap-container { display: flex; flex-direction: column; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
-            .gh-heatmap-months { display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; margin-left: 23px; }
-            .gh-heatmap-months span { font-size: 10px; color: #525252; grid-column: span 4; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
-            .gh-heatmap-body { display: flex; gap: 8px; }
-            .gh-heatmap-days { display: grid; grid-template-rows: repeat(7, 1fr); gap: 3px; font-size: 10px; color: #525252; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; width: 15px; }
-            .gh-heatmap-days span:nth-child(1) { grid-row: 2; }
-            .gh-heatmap-days span:nth-child(2) { grid-row: 4; }
-            .gh-heatmap-days span:nth-child(3) { grid-row: 6; }
-            .gh-heatmap { display: grid; grid-template-columns: repeat(52, 1fr); grid-template-rows: repeat(7, 1fr); gap: 3px; }
-            .gh-heatmap .day-square { border-radius: 2px; aspect-ratio: 1/1; width: 10px; height: 10px; position: relative; transition: transform 0.15s; }
-            .gh-heatmap .day-square:hover { transform: scale(1.3); z-index: 10; border: 1px solid rgba(255,255,255,0.2); }
-            
-            .gh-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 12px; }
-            .gh-legend span { font-size: 10px; color: #525252; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
-            .gh-legend-dots { display: flex; gap: 3px; }
-            .gh-legend-dots div { width: 10px; height: 10px; border-radius: 2px; }
 
-            /* Tooltip styles */
-            .gh-tooltip {
-              position: absolute;
-              background: #1a1a1a;
-              border: 1px solid #333;
-              color: #e5e5e5;
-              font-size: 11px;
-              padding: 6px 10px;
-              border-radius: 6px;
-              pointer-events: none;
-              white-space: nowrap;
-              opacity: 0;
-              transition: opacity 0.2s;
-              z-index: 100;
-              font-family: 'SF Mono', Monaco, monospace;
-              transform: translate(-50%, -100%);
-              margin-top: -8px;
-            }
-            .gh-tooltip.visible { opacity: 1; }
-            
-            .gh-repo-list { display: flex; flex-direction: column; gap: 10px; }
-            .gh-repo {
-              background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 10px;
-              padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
-              text-decoration: none; transition: border-color 0.2s;
-            }
-            .gh-repo:hover { border-color: #333; }
-            .gh-repo-name { font-weight: 500; font-size: 14px; color: #e5e5e5; }
-            .gh-repo-desc { font-size: 12px; color: #737373; margin-top: 2px; }
-            .gh-repo-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #737373; }
-            .gh-lang { display: flex; align-items: center; gap: 4px; }
-            .gh-dot { width: 8px; height: 8px; border-radius: 50%; }
-            
-            
-            /* Pinned Repos Grid & Cards */
-            .pinned-repo-card {
-                display: flex; flex-direction: column; justify-content: space-between;
-                padding: 20px; text-decoration: none;
-            }
-            .pinned-repo-title { font-weight: 600; font-size: 16px; color: #fafafa; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-            .pinned-repo-desc { font-size: 13px; color: #a3a3a3; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
-            .pinned-repo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: #737373; font-family: 'SF Mono', Monaco, monospace; }
-            .pinned-repo-meta span { display: flex; align-items: center; gap: 4px; }
-            
-            /* Modal Styles */
-            .repo-modal-overlay {
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8);
-                backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center;
-                opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px;
-            }
-            .repo-modal-overlay.active { opacity: 1; pointer-events: auto; }
-            .repo-modal {
-                background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; width: 100%; max-width: 600px;
-                max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-                transform: translateY(20px); transition: transform 0.3s; overflow: hidden;
-            }
-            .repo-modal-overlay.active .repo-modal { transform: translateY(0); }
-            .repo-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #1a1a1a; }
-            .repo-modal-header h3 { font-size: 18px; font-weight: 600; color: #fafafa; margin: 0; }
-            .repo-modal-close { background: none; border: none; color: #737373; font-size: 24px; cursor: pointer; transition: color 0.2s; line-height: 1; }
-            .repo-modal-close:hover { color: #fafafa; }
-            .repo-modal-search { padding: 16px 24px; border-bottom: 1px solid #1a1a1a; }
-            .repo-modal-search input { 
-                width: 100%; background: #111; border: 1px solid #262626; border-radius: 8px; 
-                padding: 10px 14px; color: #fafafa; font-size: 14px; outline: none; transition: border-color 0.2s;
-            }
-            .repo-modal-search input:focus { border-color: #52525b; }
-            .repo-modal-list { flex-grow: 1; overflow-y: auto; padding: 12px 24px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
-            
-            /* Inherit gh-more styling if any leftover uses it */
-            .gh-more { display: inline-block; margin-top: 14px; font-size: 13px; color: #a3a3a3; text-decoration: none; transition: color 0.2s; }
-            .gh-more:hover { color: #e5e5e5; }
-            
-            /* Stats Grid */
-            .gh-stats-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
-            .gh-stat-card {
-              background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 10px; padding: 14px 16px;
-              flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 6px;
-              transition: border-color 0.2s;
-            }
-            .gh-stat-card:hover { border-color: #333; }
-            .gh-stat-header { display: flex; align-items: center; gap: 8px; color: #a3a3a3; }
-            .gh-stat-header svg { width: 14px; height: 14px; }
-            .gh-stat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'SF Mono', Monaco, monospace; }
-            .gh-stat-value { font-weight: 600; font-size: 20px; color: #fafafa; line-height: 1; }
-            
-            /* Open Source PR Cards */
-            .os-tabs {
-                display: flex; gap: 4px; background: #111; padding: 4px; border-radius: 10px; width: fit-content; margin-bottom: 20px;
-                border: 1px solid #1a1a1a;
-            }
-            .os-tab {
-                background: transparent; color: #737373; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px;
-                font-weight: 500; cursor: pointer; transition: all 0.2s;
-            }
-            .os-tab:hover { color: #e5e5e5; }
-            .os-tab.active { background: #262626; color: #fafafa; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-            
-            .os-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-            @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
-            
-            .pr-card {
-                padding: 16px;
-                display: flex; flex-direction: column; gap: 12px; text-decoration: none;
-            }
-            .pr-header { display: flex; align-items: center; gap: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; color: #737373; }
-            .pr-repo { color: #a3a3a3; transition: color 0.2s; }
-            .pr-repo:hover { color: #fafafa; text-decoration: underline; }
-            .pr-title { font-size: 15px; font-weight: 500; color: #fafafa; line-height: 1.4; flex-grow: 1; }
-            .pr-badge {
-                display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px;
-                font-weight: 600; letter-spacing: 0.5px; width: fit-content;
-            }
-            .pr-badge.open { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #22c55e; }
-            .pr-badge.merged { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); color: #a855f7; }
-            .pr-badge.closed { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; }
-            .pr-badge svg { width: 12px; height: 12px; }
-            </style>
             
             <section id="opensource" class="section opensource-section section-reveal">
                 <!-- Open Source -->
@@ -535,163 +404,9 @@
               </blockquote>
             </section>
             
-            <style>
-            #leetcode { max-width: 720px; margin: 0 auto; padding-top: 10px; }
-            .lc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-            .lc-header h2 { font-size: 20px; font-weight: 600; color: #fafafa; margin: 0; }
-            
-            .lc-card {
-              background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 16px;
-              padding: 28px; position: relative; overflow: hidden;
-            }
-            .lc-orb {
-              position: absolute; top: -40px; right: -40px; width: 140px; height: 140px;
-              background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
-              border-radius: 50%; pointer-events: none;
-            }
-            
-            .lc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; position: relative; z-index: 1; }
-            .lc-user { display: flex; align-items: center; gap: 14px; }
-            .lc-avatar { width: 44px; height: 44px; border-radius: 12px; background: #171717; border: 1px solid #262626; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-            .lc-username { font-weight: 600; font-size: 16px; color: #fafafa; }
-            .lc-rank { font-size: 12px; color: #737373; margin-top: 2px; }
-            .lc-total { text-align: right; }
-            .lc-total-num { font-size: 32px; font-weight: 700; color: #fafafa; line-height: 1; }
-            .lc-total-label { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-            
-            .lc-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; position: relative; z-index: 1; }
-            .lc-bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-            .lc-bar-label span:first-child { color: #a3a3a3; }
-            .lc-bar-label span:last-child { color: #e5e5e5; font-weight: 500; }
-            .lc-bar-label i { color: #525252; font-style: normal; }
-            .lc-track { height: 6px; background: #171717; border-radius: 3px; overflow: hidden; }
-            .lc-fill { height: 100%; border-radius: 3px; }
-            
-            .lc-heatmap-wrap { margin-bottom: 20px; position: relative; z-index: 1; }
-            .lc-heatmap-header { display: flex; justify-content: space-between; font-size: 12px; color: #737373; margin-bottom: 10px; }
-            .lc-heatmap { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; }
-            .lc-heatmap div { border-radius: 2px; aspect-ratio: 1/1; transition: transform 0.15s; }
-            .lc-heatmap div:hover { transform: scale(1.3); position: relative; z-index: 10; }
-            .lc-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 8px; }
-            .lc-legend span { font-size: 10px; color: #525252; }
-            .lc-legend-dots { display: flex; gap: 2px; }
-            .lc-legend-dots div { width: 8px; height: 8px; border-radius: 1px; }
-            
-            .lc-footer { display: flex; gap: 24px; flex-wrap: wrap; position: relative; z-index: 1; }
-            .lc-ft-label { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-            .lc-ft-val { font-size: 13px; color: #e5e5e5; font-weight: 500; }
-            
-            .lc-quote { 
-                margin-top: 24px; font-size: 14px; color: #a3a3a3; font-style: italic; 
-                border-left: 3px solid #f59e0b; padding-left: 16px; background: rgba(245, 158, 11, 0.05);
-                padding-top: 12px; padding-bottom: 12px; border-radius: 0 8px 8px 0;
-            }
-            </style>
-            
-            <script>
-            document.addEventListener('DOMContentLoaded', async () => {
-              const lcGrid = document.getElementById('lc-heatmap');
-              const codolioLoading = document.getElementById('codolio-loading');
-              const codolioContent = document.getElementById('codolio-content');
-              const statsEl = document.getElementById('codolio-stats');
-              
-              const amberColors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
-              
-              const fallbackHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #737373; gap: 12px; width: 100%;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                    <span style="font-size: 13px;">Activity syncing...</span>
-                </div>
-              `;
 
-              try {
-                const res = await fetch('/api/codolio');
-                const data = await res.json();
-                
-                if (data.fallback || data.error) {
-                    codolioLoading.innerHTML = fallbackHTML;
-                    return;
-                }
-                
-                codolioLoading.style.display = 'none';
-                codolioContent.style.display = 'block';
-                
-                // Build stats
-                let statsHtml = '';
-                if (data.leetcode) {
-                  statsHtml += `
-                    <div class="gh-stat-card card">
-                      <div class="gh-stat-header">
-                        <span style="font-size:14px;">🚀</span>
-                        <span class="gh-stat-title" style="color:#f59e0b;">LeetCode</span>
-                      </div>
-                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#737373;font-weight:400;">Solved</span></div>
-                    </div>
-                  `;
-                }
-                if (data.codeforces) {
-                  statsHtml += `
-                    <div class="gh-stat-card card">
-                      <div class="gh-stat-header">
-                        <span style="font-size:14px;">📊</span>
-                        <span class="gh-stat-title" style="color:#3b82f6;">Codeforces</span>
-                      </div>
-                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#737373;font-weight:400;">Rating</span></div>
-                    </div>
-                  `;
-                }
-                statsEl.innerHTML = statsHtml;
-                
-                statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
-                    c.onmousemove = e => { 
-                        const rect = c.getBoundingClientRect(); 
-                        c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-                        c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-                    };
-                });
-                
-                // Render LeetCode Heatmap
-                const cal = data.leetcode ? data.leetcode.calendar : {};
-                
-                // LeetCode's calendar keys are unix timestamps in seconds
-                // We want to generate ~182 days (26 weeks x 7 days) ending today
-                const today = new Date();
-                today.setHours(0,0,0,0);
-                const startDate = new Date(today);
-                startDate.setDate(today.getDate() - 181);
-                
-                let dayIter = new Date(startDate);
-                while(dayIter <= today) {
-                    const d = document.createElement('div');
-                    // Find count for this day by checking timestamps that fall within this day
-                    const dayStart = dayIter.getTime() / 1000;
-                    const dayEnd = dayStart + 86400;
-                    
-                    let count = 0;
-                    for (const ts in cal) {
-                        if (ts >= dayStart && ts < dayEnd) {
-                            count += cal[ts];
-                        }
-                    }
-                    
-                    let colorIdx = 0;
-                    if (count > 0 && count <= 2) colorIdx = 1;
-                    else if (count > 2 && count <= 4) colorIdx = 2;
-                    else if (count > 4 && count <= 6) colorIdx = 3;
-                    else if (count > 6) colorIdx = 4;
-                    
-                    d.style.background = amberColors[colorIdx];
-                    lcGrid.appendChild(d);
-                    
-                    dayIter.setDate(dayIter.getDate() + 1);
-                }
+            
 
-              } catch(e) {
-                console.error(e);
-                codolioLoading.innerHTML = fallbackHTML;
-              }
-            });
-            </script>
             
             <!-- Blogs Section -->
             <section id="blog" class="section blog-section section-reveal">
@@ -792,141 +507,6 @@
     <!-- Script -->
     <script src="script.js"></script>
 
-    <script>
-    (async function() {
-      const CACHE_KEY = 'gh_data_v3';
-      const CACHE_MS = 10 * 60 * 1000;
-      const listEl = document.getElementById('os-list');
-      const countEl = document.getElementById('os-count');
-      const statsEl = document.getElementById('gh-stats');
-      const tabs = document.querySelectorAll('.os-tab');
-      let prs = [], user = null, fromCache = false;
-      
-      try {
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Date.now() - parsed.time < CACHE_MS) { prs = parsed.prs; user = parsed.user; fromCache = true; }
-        }
-      } catch(e) {}
-      
-      if (!fromCache) {
-        try {
-          const [userRes, prRes] = await Promise.all([
-            fetch('https://api.github.com/users/shafeeq27edu-ai'),
-            fetch('https://api.github.com/search/issues?q=author:shafeeq27edu-ai+type:pr+sort:created-desc&per_page=50')
-          ]);
-          if (userRes.ok) user = await userRes.json();
-          if (prRes.ok) {
-            const data = await prRes.json();
-            prs = (data.items || []).map(pr => {
-              const repoName = pr.repository_url.replace('https://api.github.com/repos/', '');
-              let status = 'Open', color = '#22c55e';
-              if (pr.state === 'closed') {
-                if (pr.pull_request && pr.pull_request.merged_at) { status = 'Merged'; color = '#a855f7'; }
-                else { status = 'Closed'; color = '#ef4444'; }
-              }
-              return { title: pr.title, repo: repoName, number: pr.number, status, color, url: pr.html_url, category: status.toLowerCase() };
-            }).filter(pr => !pr.repo.startsWith('shafeeq27edu-ai/'));
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ prs, user, time: Date.now() }));
-          }
-        } catch (err) { console.error('GitHub API error:', err); }
-      }
-      
-      if (user) {
-        const openCount = prs.filter(p => p.category === 'open').length;
-        const mergedCount = prs.filter(p => p.category === 'merged').length;
-        if (statsEl) {
-          statsEl.innerHTML = `
-            <div class="gh-stat-card">
-              <div class="gh-stat-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                <span class="gh-stat-title">Public Repos</span>
-              </div>
-              <div class="gh-stat-value">${user.public_repos}</div>
-            </div>
-            
-            <div class="gh-stat-card">
-              <div class="gh-stat-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span class="gh-stat-title">Followers</span>
-              </div>
-              <div class="gh-stat-value">${user.followers}</div>
-            </div>
-            
-            <div class="gh-stat-card">
-              <div class="gh-stat-header">
-                <svg style="color:#22c55e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
-                <span class="gh-stat-title">Open PRs</span>
-              </div>
-              <div class="gh-stat-value">${openCount}</div>
-            </div>
-            
-            <div class="gh-stat-card">
-              <div class="gh-stat-header">
-                <svg style="color:#a855f7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
-                <span class="gh-stat-title">Merged PRs</span>
-              </div>
-              <div class="gh-stat-value">${mergedCount}</div>
-            </div>
-          `;
-        }
-      } else { if (statsEl) statsEl.innerHTML = '<span class="loading-placeholder">Stats unavailable</span>'; }
-      
-      if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
-      
-      function render(filter) {
-        let filtered = prs;
-        if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
-        if (filtered.length === 0) { listEl.innerHTML = '<div class="loading-placeholder">No PRs in this category.</div>'; return; }
-        
-        listEl.innerHTML = filtered.map(pr => {
-          let icon = '';
-          let badgeClass = '';
-          if (pr.category === 'open') {
-            badgeClass = 'open';
-            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>';
-          } else if (pr.category === 'merged') {
-            badgeClass = 'merged';
-            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>';
-          } else {
-            badgeClass = 'closed';
-            icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-          }
-          
-          return `
-          <a href="${pr.url}" class="pr-card card" target="_blank" rel="noopener noreferrer">
-            <div class="pr-header">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
-              <span class="pr-repo">${pr.repo}</span>
-              <span>#${pr.number}</span>
-            </div>
-            <div class="pr-title">${pr.title}</div>
-            <div class="pr-badge ${badgeClass}">
-              ${icon} ${pr.status}
-            </div>
-          </a>
-        `}).join('');
-        
-        // Add mousemove effect to new PR cards
-        listEl.querySelectorAll('.pr-card').forEach(c => {
-            c.onmousemove = e => { 
-                const rect = c.getBoundingClientRect(); 
-                c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-                c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-            };
-        });
-      }
-      
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          render(tab.dataset.filter);
-        });
-      });
-      render('all');
-    })();
-    </script>
+
 </body>
 </html>

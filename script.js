@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     if (ghHeatmap && ghMonths) {
-        // Create tooltip element
+        // Create tooltip element — use fixed positioning for correct placement
         const tooltip = document.createElement('div');
         tooltip.className = 'gh-tooltip';
         document.body.appendChild(tooltip);
@@ -101,13 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         square.className = 'day-square';
                         square.style.background = colors[colorIdx];
                         
-                        // Tooltip logic
-                        square.addEventListener('mouseenter', (e) => {
+                        // Tooltip logic — fixed positioning avoids scroll offset bugs
+                        square.addEventListener('mouseenter', () => {
                             const rect = square.getBoundingClientRect();
                             const dateStr = new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                             tooltip.textContent = `${count} contributions on ${dateStr}`;
                             tooltip.style.left = (rect.left + rect.width / 2) + 'px';
-                            tooltip.style.top = rect.top + window.scrollY + 'px';
+                            tooltip.style.top = rect.top + 'px';
                             tooltip.classList.add('visible');
                         });
                         square.addEventListener('mouseleave', () => {
@@ -221,37 +221,56 @@ document.addEventListener("DOMContentLoaded", () => {
         modalList.innerHTML = reposToRender.map(r => getRepoCardHTML(r)).join('');
     }
 
+    // Helper to close modal
+    function closeModal() {
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
     if (viewAllBtn && modalOverlay && modalClose) {
         viewAllBtn.addEventListener('click', () => {
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            searchInput.focus();
+            if (searchInput) searchInput.focus();
         });
 
-        modalClose.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
+        modalClose.addEventListener('click', closeModal);
 
         modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
-                document.body.style.overflow = '';
+            if (e.target === modalOverlay) closeModal();
+        });
+        
+        // Escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
             }
         });
         
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allRepos.filter(r => 
-                r.name.toLowerCase().includes(term) || 
-                (r.description && r.description.toLowerCase().includes(term)) ||
-                (r.language && r.language.toLowerCase().includes(term))
-            );
-            renderModalList(filtered);
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allRepos.filter(r => 
+                    r.name.toLowerCase().includes(term) || 
+                    (r.description && r.description.toLowerCase().includes(term)) ||
+                    (r.language && r.language.toLowerCase().includes(term))
+                );
+                renderModalList(filtered);
+            });
+        }
+    }
+
+    // --- Subscribe Button Handler ---
+    const subscribeBtn = document.querySelector('.btn-subscribe');
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', () => {
+            window.location.href = 'mailto:aadhilxshafeeq@gmail.com?subject=Subscribe%20to%20Blog%20Updates';
         });
     }
 
-    // --- Scroll Reveal Animations (Upgrade 2) ---
+    // --- Scroll Reveal Animations ---
     const revealSections = document.querySelectorAll('.section-reveal');
     if (revealSections.length > 0) {
         const revealObserver = new IntersectionObserver((entries) => {
@@ -265,4 +284,246 @@ document.addEventListener("DOMContentLoaded", () => {
 
         revealSections.forEach(section => revealObserver.observe(section));
     }
+
+    // --- Codolio / LeetCode Stats & Heatmap ---
+    (async function loadCodolio() {
+        const lcGrid = document.getElementById('lc-heatmap');
+        const codolioLoading = document.getElementById('codolio-loading');
+        const codolioContent = document.getElementById('codolio-content');
+        const statsEl = document.getElementById('codolio-stats');
+        
+        if (!lcGrid || !codolioLoading || !codolioContent || !statsEl) return;
+
+        const amberColors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
+        
+        const codolioFallbackHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #737373; gap: 12px; width: 100%;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                <span style="font-size: 13px;">Activity syncing...</span>
+            </div>
+        `;
+
+        try {
+            const res = await fetch('/api/codolio');
+            const data = await res.json();
+            
+            if (data.fallback || data.error) {
+                codolioLoading.innerHTML = codolioFallbackHTML;
+                return;
+            }
+            
+            codolioLoading.style.display = 'none';
+            codolioContent.style.display = 'block';
+            
+            // Build stats
+            let statsHtml = '';
+            if (data.leetcode) {
+                statsHtml += `
+                    <div class="gh-stat-card card">
+                      <div class="gh-stat-header">
+                        <span style="font-size:14px;">🚀</span>
+                        <span class="gh-stat-title" style="color:#f59e0b;">LeetCode</span>
+                      </div>
+                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#737373;font-weight:400;">Solved</span></div>
+                    </div>
+                `;
+            }
+            if (data.codeforces) {
+                statsHtml += `
+                    <div class="gh-stat-card card">
+                      <div class="gh-stat-header">
+                        <span style="font-size:14px;">📊</span>
+                        <span class="gh-stat-title" style="color:#3b82f6;">Codeforces</span>
+                      </div>
+                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#737373;font-weight:400;">Rating</span></div>
+                    </div>
+                `;
+            }
+            statsEl.innerHTML = statsHtml;
+            
+            statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
+                c.onmousemove = e => { 
+                    const rect = c.getBoundingClientRect(); 
+                    c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
+                    c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
+                };
+            });
+            
+            // Render LeetCode Heatmap
+            const cal = data.leetcode ? data.leetcode.calendar : {};
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 181);
+            
+            let dayIter = new Date(startDate);
+            while(dayIter <= today) {
+                const d = document.createElement('div');
+                const dayStart = dayIter.getTime() / 1000;
+                const dayEnd = dayStart + 86400;
+                
+                let count = 0;
+                for (const ts in cal) {
+                    if (ts >= dayStart && ts < dayEnd) {
+                        count += cal[ts];
+                    }
+                }
+                
+                let colorIdx = 0;
+                if (count > 0 && count <= 2) colorIdx = 1;
+                else if (count > 2 && count <= 4) colorIdx = 2;
+                else if (count > 4 && count <= 6) colorIdx = 3;
+                else if (count > 6) colorIdx = 4;
+                
+                d.style.background = amberColors[colorIdx];
+                lcGrid.appendChild(d);
+                
+                dayIter.setDate(dayIter.getDate() + 1);
+            }
+
+        } catch(e) {
+            console.error('Codolio fetch error:', e);
+            codolioLoading.innerHTML = codolioFallbackHTML;
+        }
+    })();
+
+    // --- GitHub Open Source PRs & Stats ---
+    (async function loadGitHubPRs() {
+        const CACHE_KEY = 'gh_data_v3';
+        const CACHE_MS = 10 * 60 * 1000;
+        const listEl = document.getElementById('os-list');
+        const countEl = document.getElementById('os-count');
+        const ghStatsEl = document.getElementById('gh-stats');
+        const tabs = document.querySelectorAll('.os-tab');
+        let prs = [], user = null, fromCache = false;
+        
+        if (!listEl) return;
+
+        try {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.time < CACHE_MS) { prs = parsed.prs; user = parsed.user; fromCache = true; }
+            }
+        } catch(e) {}
+        
+        if (!fromCache) {
+            try {
+                const [userRes, prRes] = await Promise.all([
+                    fetch('https://api.github.com/users/shafeeq27edu-ai'),
+                    fetch('https://api.github.com/search/issues?q=author:shafeeq27edu-ai+type:pr+sort:created-desc&per_page=50')
+                ]);
+                if (userRes.ok) user = await userRes.json();
+                if (prRes.ok) {
+                    const data = await prRes.json();
+                    prs = (data.items || []).map(pr => {
+                        const repoName = pr.repository_url.replace('https://api.github.com/repos/', '');
+                        let status = 'Open', color = '#22c55e';
+                        if (pr.state === 'closed') {
+                            if (pr.pull_request && pr.pull_request.merged_at) { status = 'Merged'; color = '#a855f7'; }
+                            else { status = 'Closed'; color = '#ef4444'; }
+                        }
+                        return { title: pr.title, repo: repoName, number: pr.number, status, color, url: pr.html_url, category: status.toLowerCase() };
+                    }).filter(pr => !pr.repo.startsWith('shafeeq27edu-ai/'));
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ prs, user, time: Date.now() }));
+                }
+            } catch (err) { console.error('GitHub API error:', err); }
+        }
+        
+        if (user) {
+            const openCount = prs.filter(p => p.category === 'open').length;
+            const mergedCount = prs.filter(p => p.category === 'merged').length;
+            if (ghStatsEl) {
+                ghStatsEl.innerHTML = `
+                    <div class="gh-stat-card">
+                      <div class="gh-stat-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        <span class="gh-stat-title">Public Repos</span>
+                      </div>
+                      <div class="gh-stat-value">${user.public_repos}</div>
+                    </div>
+                    
+                    <div class="gh-stat-card">
+                      <div class="gh-stat-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span class="gh-stat-title">Followers</span>
+                      </div>
+                      <div class="gh-stat-value">${user.followers}</div>
+                    </div>
+                    
+                    <div class="gh-stat-card">
+                      <div class="gh-stat-header">
+                        <svg style="color:#22c55e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+                        <span class="gh-stat-title">Open PRs</span>
+                      </div>
+                      <div class="gh-stat-value">${openCount}</div>
+                    </div>
+                    
+                    <div class="gh-stat-card">
+                      <div class="gh-stat-header">
+                        <svg style="color:#a855f7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
+                        <span class="gh-stat-title">Merged PRs</span>
+                      </div>
+                      <div class="gh-stat-value">${mergedCount}</div>
+                    </div>
+                `;
+            }
+        } else { if (ghStatsEl) ghStatsEl.innerHTML = '<span class="loading-placeholder">Stats unavailable</span>'; }
+        
+        if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
+        
+        function render(filter) {
+            let filtered = prs;
+            if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
+            if (filtered.length === 0) { listEl.innerHTML = '<div class="loading-placeholder">No PRs in this category.</div>'; return; }
+            
+            listEl.innerHTML = filtered.map(pr => {
+                let icon = '';
+                let badgeClass = '';
+                if (pr.category === 'open') {
+                    badgeClass = 'open';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>';
+                } else if (pr.category === 'merged') {
+                    badgeClass = 'merged';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>';
+                } else {
+                    badgeClass = 'closed';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+                }
+                
+                return `
+                <a href="${pr.url}" class="pr-card card" target="_blank" rel="noopener noreferrer">
+                    <div class="pr-header">
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                      <span class="pr-repo">${pr.repo}</span>
+                      <span>#${pr.number}</span>
+                    </div>
+                    <div class="pr-title">${pr.title}</div>
+                    <div class="pr-badge ${badgeClass}">
+                      ${icon} ${pr.status}
+                    </div>
+                </a>
+                `;
+            }).join('');
+            
+            // Add mousemove effect to new PR cards
+            listEl.querySelectorAll('.pr-card').forEach(c => {
+                c.onmousemove = e => { 
+                    const rect = c.getBoundingClientRect(); 
+                    c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
+                    c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
+                };
+            });
+        }
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                render(tab.dataset.filter);
+            });
+        });
+        render('all');
+    })();
 });

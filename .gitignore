@@ -1,0 +1,31 @@
+# Environment variables / secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Third-party repo clones
+agenta/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build output
+dist/
+build/
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
