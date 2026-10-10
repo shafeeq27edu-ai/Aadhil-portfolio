@@ -29,3 +29,5 @@ build/
 # Logs
 *.log
 npm-debug.log*
+
+.screenshots/

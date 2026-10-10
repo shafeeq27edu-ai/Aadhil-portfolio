@@ -11,10 +11,11 @@ export default async function handler(req, res) {
   const username = 'shafeeq27edu-ai';
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
-  // If token is missing, we log it but return fallback to prevent UI crash
+  // If token is missing, we log it but return error to prevent UI crash
   if (!token) {
-    console.warn('GITHUB_TOKEN is missing. Returning fallback data.');
-    return returnFallback(res);
+    console.warn('GITHUB_TOKEN is missing.');
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(500).json({ error: 'GITHUB_TOKEN is missing' });
   }
 
   const query = `
@@ -45,6 +46,9 @@ export default async function handler(req, res) {
       return res.status(200).json(cache);
     }
 
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 6000);
+
     const response = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: {
@@ -55,7 +59,9 @@ export default async function handler(req, res) {
         query,
         variables: { userName: username },
       }),
+      signal: controller.signal,
     });
+    clearTimeout(fetchTimeout);
 
     if (!response.ok) {
       throw new Error(`GitHub API returned ${response.status}: ${await response.text()}`);
@@ -78,7 +84,7 @@ export default async function handler(req, res) {
     cache = result;
     lastFetchTime = Date.now();
 
-    res.setHeader('Cache-Control', 'public, s-maxage=10800, stale-while-revalidate=43200');
+    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     return res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching GitHub contributions:', error.message || error);
@@ -87,17 +93,8 @@ export default async function handler(req, res) {
       console.log('Serving stale cache due to error');
       return res.status(200).json(cache);
     }
-    // Otherwise serve clean empty state
-    return returnFallback(res);
+    // Otherwise serve error
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(500).json({ error: 'Failed to fetch GitHub data' });
   }
-}
-
-function returnFallback(res) {
-  res.setHeader('Cache-Control', 'no-cache');
-  return res.status(200).json({ 
-    total: 0,
-    followers: 0,
-    weeks: [],
-    fallback: true
-  });
 }

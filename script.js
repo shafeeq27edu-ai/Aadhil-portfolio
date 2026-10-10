@@ -1,6 +1,61 @@
 const PINNED_REPOS = ['UrbanSheild-2.0-AI-', 'Trackr', 'agenta'];
 
 document.addEventListener("DOMContentLoaded", () => {
+    // --- Resilient Fetch Helper ---
+    async function fetchWithRetryAndCache(url, cacheKey, ttl = 3600000) {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.timestamp < ttl) return parsed.data;
+            } catch(e) {}
+        }
+        
+        const fetchOnce = async (timeoutMs) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(id);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                clearTimeout(id);
+                if (e.name === 'AbortError') throw new Error('TIMEOUT');
+                throw e;
+            }
+        };
+
+        try {
+            const data = await fetchOnce(8000);
+            if (!data.error && !data.fallback) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+            return data;
+        } catch(err1) {
+            console.warn(`Fetch ${url} failed:`, err1);
+            if (err1.message !== 'TIMEOUT' && (!err1.message.startsWith('HTTP ') || err1.message.startsWith('HTTP 5'))) {
+                console.warn(`Retrying fetch ${url}...`);
+                try {
+                    const data = await fetchOnce(8000);
+                    if (!data.error && !data.fallback) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+                    return data;
+                } catch(err2) {
+                    console.error(`Fetch ${url} failed after retry.`, err2);
+                }
+            }
+            if (cached) {
+                try { 
+                    const parsed = JSON.parse(cached);
+                    if (parsed.data && typeof parsed.data === 'object') {
+                        parsed.data._stale = true;
+                        parsed.data._lastUpdated = parsed.timestamp;
+                    }
+                    return parsed.data; 
+                } catch(e) {}
+            }
+            throw err1;
+        }
+    }
+
     // --- Mouse Spotlight on Cards ---
     document.querySelectorAll('.card, .project-card, .exp-card, .highlight-card').forEach(c => {
         c.onmousemove = e => { 
@@ -15,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const navLinks = document.querySelectorAll(".index-nav ul li a");
 
     if (sections.length > 0 && navLinks.length > 0) {
-        const observerOptions = { root: null, rootMargin: "0px", threshold: 0.2 };
+        const observerOptions = { root: null, rootMargin: "-20% 0px -60% 0px", threshold: 0 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -28,13 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }, observerOptions);
 
         sections.forEach((section) => observer.observe(section));
+
+        // Bottom-of-page fallback: activate the last section
         window.addEventListener('scroll', () => {
-            if (window.scrollY < 100) {
-                navLinks.forEach(link => link.classList.remove("active"));
-                const heroLink = document.querySelector('.index-nav ul li a[href="#hero"]');
-                if (heroLink) heroLink.classList.add("active");
+            if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50)) {
+                navLinks.forEach((link) => link.classList.remove("active"));
+                const lastLink = navLinks[navLinks.length - 1];
+                if (lastLink) lastLink.classList.add("active");
             }
-        });
+        }, { passive: true });
     }
 
     // --- GitHub Heatmap Fetch & Render ---
@@ -43,9 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalSpan = document.getElementById('gh-total-contribs');
     
     const fallbackHTML = `
-        <div style="grid-column: span 52; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; color: #737373; gap: 12px; grid-row: span 7;">
+        <div style="grid-column: span 52; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; color: #8a8a8a; gap: 12px; grid-row: span 7;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-            <span style="font-size: 13px;">Activity syncing...</span>
+            <span style="font-size: 14px;">Couldn't load live data. <a href="https://github.com/shafeeq27edu-ai" target="_blank" style="color: #f59e0b; text-decoration: underline;">View on GitHub</a></span>
         </div>
     `;
 
@@ -56,15 +113,18 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(tooltip);
 
         // Fetch data
-        fetch('/api/github')
-            .then(res => res.json())
+        fetchWithRetryAndCache('/api/github', 'gh_heatmap_cache', 3600000)
             .then(data => {
                 if(data.error || data.fallback || !data.weeks || data.weeks.length === 0) {
                     ghHeatmap.innerHTML = fallbackHTML;
                     return;
                 }
                 
-                if (totalSpan) totalSpan.textContent = `${data.total || 0} contributions in the last year`;
+                if (data._stale && totalSpan) {
+                    totalSpan.innerHTML = `${data.total || 0} contributions in the last year <span style="color:#f59e0b; font-size:12px; margin-left:8px;">(last updated ${new Date(data._lastUpdated).toLocaleDateString()})</span>`;
+                } else if (totalSpan) {
+                    totalSpan.textContent = `${data.total || 0} contributions in the last year`;
+                }
 
                 const weeks = data.weeks || [];
                 const colors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
@@ -173,8 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (pinnedGrid) {
-        fetch('/api/repos')
-            .then(res => res.json())
+        fetchWithRetryAndCache('/api/repos', 'gh_repos_cache', 3600000)
             .then(data => {
                 if (data.error) throw new Error(data.error);
                 allRepos = data;
@@ -193,6 +252,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 pinnedGrid.innerHTML = pinned.map(r => getRepoCardHTML(r)).join('');
                 
+                if (data._stale) {
+                    const staleHint = document.createElement('div');
+                    staleHint.style.gridColumn = '1 / -1';
+                    staleHint.style.color = '#f59e0b';
+                    staleHint.style.fontSize = '12px';
+                    staleHint.style.textAlign = 'center';
+                    staleHint.textContent = `⚠️ Showing cached repositories (last updated ${new Date(data._lastUpdated).toLocaleString()})`;
+                    pinnedGrid.prepend(staleHint);
+                }
+                
                 // Populate Modal initially
                 renderModalList(allRepos);
                 
@@ -207,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 console.error("Failed to load repos:", err);
-                pinnedGrid.innerHTML = '<div class="loading-placeholder">Failed to load repositories.</div>';
+                pinnedGrid.innerHTML = '<div class="loading-placeholder">Couldn\'t load live data. <a href="https://github.com/shafeeq27edu-ai" target="_blank" style="color: #f59e0b; text-decoration: underline;">View on GitHub</a></div>';
             });
     }
 
@@ -297,15 +366,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const amberColors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
         
         const codolioFallbackHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #737373; gap: 12px; width: 100%;">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #8a8a8a; gap: 12px; width: 100%;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                <span style="font-size: 13px;">Activity syncing...</span>
+                <span style="font-size: 14px;">Couldn't load live data. <a href="https://codolio.com/profile/shafeeq_27" target="_blank" style="color: #fbbf24; text-decoration: underline;">View Codolio Profile</a></span>
             </div>
         `;
 
         try {
-            const res = await fetch('/api/codolio');
-            const data = await res.json();
+            const data = await fetchWithRetryAndCache('/api/codolio', 'codolio_stats_cache', 3600000);
             
             if (data.fallback || data.error) {
                 codolioLoading.innerHTML = codolioFallbackHTML;
@@ -324,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span style="font-size:14px;">🚀</span>
                         <span class="gh-stat-title" style="color:#f59e0b;">LeetCode</span>
                       </div>
-                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#737373;font-weight:400;">Solved</span></div>
+                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#8a8a8a;font-weight:400;">Solved</span></div>
                     </div>
                 `;
             }
@@ -335,11 +403,22 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span style="font-size:14px;">📊</span>
                         <span class="gh-stat-title" style="color:#3b82f6;">Codeforces</span>
                       </div>
-                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#737373;font-weight:400;">Rating</span></div>
+                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#8a8a8a;font-weight:400;">Rating</span></div>
                     </div>
                 `;
             }
             statsEl.innerHTML = statsHtml;
+            
+            if (data._stale) {
+                const staleHint = document.createElement('div');
+                staleHint.style.gridColumn = '1 / -1';
+                staleHint.style.color = '#f59e0b';
+                staleHint.style.fontSize = '12px';
+                staleHint.style.textAlign = 'center';
+                staleHint.style.marginBottom = '16px';
+                staleHint.textContent = `⚠️ Showing cached stats (last updated ${new Date(data._lastUpdated).toLocaleString()})`;
+                statsEl.prepend(staleHint);
+            }
             
             statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
                 c.onmousemove = e => { 

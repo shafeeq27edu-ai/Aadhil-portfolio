@@ -89,7 +89,7 @@
                 <div class="exp-list">
                     <div class="exp-card card">
                         <div class="exp-logo">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                         </div>
                         <div class="exp-middle">
                             <h3 class="exp-title">Independent Developer &amp; Competitive Programmer</h3>
@@ -106,7 +106,7 @@
 
                     <div class="exp-card card">
                         <div class="exp-logo">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
                         </div>
                         <div class="exp-middle">
                             <div class="exp-title-row">
@@ -304,7 +304,9 @@
             <section id="pinned" class="section pinned-section section-reveal">
                 <h2 class="section-header">Pinned Repositories</h2>
                 <div id="pinned-repos-grid" class="projects-grid">
-                    <div class="loading-placeholder">Loading repositories...</div>
+                    <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
+                    <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
+                    <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
                 </div>
                 <div class="pinned-view-all" style="text-align: center; margin-top: 24px;">
                     <button id="view-all-repos-btn" class="btn-view-all">View All Repositories &nearr;</button>
@@ -326,7 +328,10 @@
                     <button class="os-tab" data-filter="merged">Merged</button>
                     <button class="os-tab" data-filter="closed">Closed</button>
                   </div>
-                  <div id="os-list" class="os-grid"><div class="loading-placeholder">Loading contributions...</div></div>
+                  <div id="os-list" class="os-grid">
+                      <div class="skeleton-box" style="height: 80px; width: 100%;"></div>
+                      <div class="skeleton-box" style="height: 80px; width: 100%;"></div>
+                  </div>
                   <div class="os-view-all-center">
                     <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="btn-view-all">View All on GitHub &nearr;</a>
                   </div>
@@ -363,7 +368,7 @@
                 <span class="lc-section-header-icon">⚔️</span>
                 <div class="lc-section-header-body">
                   <h2 class="section-header" style="margin-bottom: 4px;">The Grind</h2>
-                  <div class="lc-section-header-subtitle">Powered by Codolio — aggregating LeetCode, Codeforces &amp; more</div>
+                  <div class="lc-section-header-subtitle">LeetCode + Codeforces</div>
                 </div>
                 <a href="https://codolio.com/profile/shafeeq_27" target="_blank" class="btn-view-all" style="margin:0;">View Profile &nearr;</a>
               </div>
@@ -371,7 +376,7 @@
               <div class="lc-card card">
                 <div class="lc-orb"></div>
                 
-                <div id="codolio-loading" class="loading-placeholder">Aggregating stats...</div>
+                <div id="codolio-loading" class="skeleton-box" style="width: 100%; height: 200px; margin: 20px 0;"></div>
                 
                 <div id="codolio-content" style="display: none; position: relative; z-index: 1;">
                   <div class="gh-stats-grid" id="codolio-stats" style="margin-bottom: 32px;">
@@ -421,7 +426,10 @@
             
             <!-- Highlights Section -->
             <section id="highlights" class="section highlights-section section-reveal">
-                <h2 class="section-header">Highlights</h2>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
+                    <h2 class="section-header" style="margin-bottom: 0;">Highlights</h2>
+                    <span style="font-size: 14px; color: var(--text-muted); font-family: var(--font-mono);">Scroll &rarr;</span>
+                </div>
                 <div class="highlights-scroll-row">
                     <div class="highlight-card card">
                         <div class="highlight-emoji-area">&#127891;</div>
@@ -480,7 +488,7 @@
                     <li><a href="#pinned"><span class="active-dot"></span>Pinned Repos</a></li>
                     <li><a href="#opensource"><span class="active-dot"></span>Open Source</a></li>
                     <li><a href="#skills"><span class="active-dot"></span>Skills</a></li>
-                    <li><a href="#leetcode"><span class="active-dot"></span>Codolio</a></li>
+                    <li><a href="#leetcode"><span class="active-dot"></span>The Grind</a></li>
                     <li><a href="#blog"><span class="active-dot"></span>Blog</a></li>
                     <li><a href="#highlights"><span class="active-dot"></span>Highlights</a></li>
                 </ul>

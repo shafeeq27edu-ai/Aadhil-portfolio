@@ -34,6 +34,9 @@ export default async function handler(req, res) {
       }
     `;
 
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 6000);
+
     const [lcRes, cfRes] = await Promise.allSettled([
       fetch('https://leetcode.com/graphql', {
         method: 'POST',
@@ -42,9 +45,13 @@ export default async function handler(req, res) {
           'Referer': 'https://leetcode.com',
         },
         body: JSON.stringify({ query: lcQuery, variables: { username } }),
+        signal: controller.signal,
       }),
-      fetch(`https://codeforces.com/api/user.info?handles=${username}`)
+      fetch(`https://codeforces.com/api/user.info?handles=${username}`, {
+        signal: controller.signal,
+      })
     ]);
+    clearTimeout(fetchTimeout);
 
     let leetcode = null;
     let codeforces = null;
@@ -108,10 +115,7 @@ export default async function handler(req, res) {
     if (cache) {
       return res.status(200).json(cache);
     }
-    return res.status(200).json({ 
-      leetcode: null, 
-      codeforces: null,
-      fallback: true
-    });
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(500).json({ error: 'Failed to fetch LeetCode and Codeforces data' });
   }
 }

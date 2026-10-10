@@ -6,8 +6,8 @@
     --border-hover: #333333;
     
     --text-primary: #ffffff;      /* Headings */
-    --text-secondary: #737373;    /* Body text */
-    --text-muted: #52525b;        /* Muted labels */
+    --text-secondary: #a3a3a3;    /* Body text */
+    --text-muted: #8a8a8a;        /* Muted labels */
     
     --accent-amber: #f59e0b;      /* Tactical amber */
     --accent-green: #22c55e;      /* Live */
@@ -38,7 +38,7 @@ html {
 /* Single merged body rule (Bug 2 fix) */
 body {
     background-color: var(--bg-color);
-    color: var(--text-secondary); /* Base body color is #737373 — NOT white */
+    color: var(--text-secondary); /* Base body color is #a3a3a3 — NOT white */
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -69,28 +69,29 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Global Transitions */
 a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill, .os-item, .codolio-card {
-    transition: transform 0.15s ease, color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    transition: transform 0.15s ease, color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 /* Layout Architecture */
 .layout-wrapper {
-    max-width: 900px;
+    max-width: 1120px;
     margin: 0 auto;
     padding: 2rem;
     display: flex;
-    justify-content: space-between;
+    gap: 3rem;
     align-items: flex-start;
     position: relative;
 }
 
 .main-content {
-    width: 100%;
-    max-width: 720px;
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: var(--section-spacing);
     padding-bottom: 5rem;
 }
+
 
 /* ==========================================
    Utility Classes (Bug 1/9 fix — replacing Tailwind)
@@ -106,7 +107,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 
 /* Loading / Error placeholder (Bug 9 fix) */
 .loading-placeholder {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     padding: 2rem 0;
     text-align: center;
@@ -119,7 +120,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     padding: 0.5rem 1rem;
     border-radius: var(--radius-lg);
     background-color: var(--border-color);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-primary);
     border: 1px solid #262626;
     cursor: pointer;
@@ -171,7 +172,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     flex-grow: 1;
 }
 .lc-section-header-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     font-family: var(--font-mono);
 }
@@ -242,6 +243,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     line-height: 1.625;
     margin-bottom: 2rem;
     margin-left: 1rem;
+    max-width: 65ch;
 }
 
 .hero-bio p {
@@ -382,7 +384,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 }
 
 .exp-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
 }
 
@@ -395,7 +397,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 }
 
 .exp-date {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     margin-bottom: 0.125rem;
 }
@@ -407,7 +409,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 }
 
 .exp-location {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
 }
 
@@ -426,7 +428,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 0.5rem 1rem;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     cursor: pointer;
     text-decoration: none;
@@ -467,7 +469,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 .project-initials {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #8a8a8a;
     letter-spacing: -0.05em;
 }
 
@@ -557,7 +559,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 .dot.amber { background-color: var(--accent-amber); }
 
 .project-desc {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     margin-top: 0.5rem;
     display: -webkit-box;
@@ -595,7 +597,7 @@ a, button, .exp-card, .social-pill, .project-card, .highlight-card, .skill-pill,
 }
 
 .view-project-link {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-primary);
     text-decoration: none;
 }
@@ -730,6 +732,8 @@ body::after {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+
+    padding-right: 1rem;
 }
 
 .skill-pill {
@@ -741,7 +745,7 @@ body::after {
     border: 1px solid var(--border-color);
     background-color: var(--card-bg);
     color: var(--text-secondary);
-    font-size: 0.75rem;
+    font-size: 14px;
 }
 
 /* Skill pill amber glow hover (Upgrade 4) */
@@ -773,7 +777,7 @@ body::after {
 }
 
 .view-profile-link {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-primary);
     text-decoration: none;
 }
@@ -827,7 +831,7 @@ body::after {
 }
 
 .codolio-quote {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
     font-style: italic;
 }
@@ -891,6 +895,10 @@ body::after {
     padding-bottom: 0.5rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
+
+    padding-right: 2rem;
+    scroll-padding-right: 2rem;
+    scroll-snap-type: x mandatory;
 }
 .highlights-scroll-row::-webkit-scrollbar {
     display: none;
@@ -906,6 +914,8 @@ body::after {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
+    scroll-snap-align: start;
 }
 
 .highlight-card:hover {
@@ -927,7 +937,7 @@ body::after {
 }
 
 .highlight-title {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-primary);
 }
@@ -958,7 +968,7 @@ body::after {
 }
 
 .footer-attribution {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--accent-amber); 
     margin-top: 1rem;
     font-weight: 500;
@@ -1006,7 +1016,7 @@ body::after {
 .index-nav a {
     text-decoration: none;
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     transition: color 0.15s ease;
     display: flex;
     align-items: center;
@@ -1068,7 +1078,6 @@ body::after {
 
 @media (max-width: 768px) {
     .main-content {
-        max-width: 100%;
         padding-bottom: 2rem;
         gap: 2rem;
     }
@@ -1110,7 +1119,7 @@ a[href*="github.com/pulls"]:hover {
 /* ==========================================
    GitHub Heatmap & Activity (extracted from inline)
    ========================================== */
-#github { max-width: 720px; margin: 0 auto; padding-top: 10px; }
+#github { padding-top: 10px; }
 #github h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #fafafa; }
 
 .gh-heatmap-wrap {
@@ -1120,13 +1129,13 @@ a[href*="github.com/pulls"]:hover {
 }
 .gh-heatmap-header {
   display: flex; justify-content: space-between; font-size: 12px;
-  color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
+  color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
 }
 .gh-heatmap-container { display: flex; flex-direction: column; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
 .gh-heatmap-months { display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; margin-left: 23px; }
-.gh-heatmap-months span { font-size: 10px; color: #525252; grid-column: span 4; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
+.gh-heatmap-months span { font-size: 10px; color: #8a8a8a; grid-column: span 4; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; }
 .gh-heatmap-body { display: flex; gap: 8px; }
-.gh-heatmap-days { display: grid; grid-template-rows: repeat(7, 1fr); gap: 3px; font-size: 10px; color: #525252; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; width: 15px; }
+.gh-heatmap-days { display: grid; grid-template-rows: repeat(7, 1fr); gap: 3px; font-size: 10px; color: #8a8a8a; font-family: 'SF Mono', Monaco, monospace; text-transform: uppercase; width: 15px; }
 .gh-heatmap-days span:nth-child(1) { grid-row: 2; }
 .gh-heatmap-days span:nth-child(2) { grid-row: 4; }
 .gh-heatmap-days span:nth-child(3) { grid-row: 6; }
@@ -1162,8 +1171,8 @@ a[href*="github.com/pulls"]:hover {
 }
 .gh-repo:hover { border-color: #333; }
 .gh-repo-name { font-weight: 500; font-size: 14px; color: #e5e5e5; }
-.gh-repo-desc { font-size: 12px; color: #737373; margin-top: 2px; }
-.gh-repo-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #737373; }
+.gh-repo-desc { font-size: 14px; color: #8a8a8a; margin-top: 2px; }
+.gh-repo-meta { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #8a8a8a; }
 .gh-lang { display: flex; align-items: center; gap: 4px; }
 .gh-dot { width: 8px; height: 8px; border-radius: 50%; }
 
@@ -1173,8 +1182,8 @@ a[href*="github.com/pulls"]:hover {
     padding: 20px; text-decoration: none;
 }
 .pinned-repo-title { font-weight: 600; font-size: 16px; color: #fafafa; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.pinned-repo-desc { font-size: 13px; color: #a3a3a3; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
-.pinned-repo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: #737373; font-family: 'SF Mono', Monaco, monospace; }
+.pinned-repo-desc { font-size: 14px; color: #b3b3b3; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
+.pinned-repo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 14px; color: #8a8a8a; font-family: 'SF Mono', Monaco, monospace; }
 .pinned-repo-meta span { display: flex; align-items: center; gap: 4px; }
 
 /* Modal Styles */
@@ -1192,18 +1201,18 @@ a[href*="github.com/pulls"]:hover {
 .repo-modal-overlay.active .repo-modal { transform: translateY(0); }
 .repo-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #1a1a1a; }
 .repo-modal-header h3 { font-size: 18px; font-weight: 600; color: #fafafa; margin: 0; }
-.repo-modal-close { background: none; border: none; color: #737373; font-size: 24px; cursor: pointer; transition: color 0.2s; line-height: 1; }
+.repo-modal-close { background: none; border: none; color: #8a8a8a; font-size: 24px; cursor: pointer; transition: color 0.2s; line-height: 1; }
 .repo-modal-close:hover { color: #fafafa; }
 .repo-modal-search { padding: 16px 24px; border-bottom: 1px solid #1a1a1a; }
 .repo-modal-search input { 
     width: 100%; background: #111; border: 1px solid #262626; border-radius: 8px; 
     padding: 10px 14px; color: #fafafa; font-size: 14px; outline: none; transition: border-color 0.2s;
 }
-.repo-modal-search input:focus { border-color: #52525b; }
+.repo-modal-search input:focus { border-color: #787878; }
 .repo-modal-list { flex-grow: 1; overflow-y: auto; padding: 12px 24px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
 
 /* Inherit gh-more styling if any leftover uses it */
-.gh-more { display: inline-block; margin-top: 14px; font-size: 13px; color: #a3a3a3; text-decoration: none; transition: color 0.2s; }
+.gh-more { display: inline-block; margin-top: 14px; font-size: 14px; color: #b3b3b3; text-decoration: none; transition: color 0.2s; }
 .gh-more:hover { color: #e5e5e5; }
 
 /* Stats Grid */
@@ -1214,7 +1223,7 @@ a[href*="github.com/pulls"]:hover {
   transition: border-color 0.2s;
 }
 .gh-stat-card:hover { border-color: #333; }
-.gh-stat-header { display: flex; align-items: center; gap: 8px; color: #a3a3a3; }
+.gh-stat-header { display: flex; align-items: center; gap: 8px; color: #b3b3b3; }
 .gh-stat-header svg { width: 14px; height: 14px; }
 .gh-stat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'SF Mono', Monaco, monospace; }
 .gh-stat-value { font-weight: 600; font-size: 20px; color: #fafafa; line-height: 1; }
@@ -1225,7 +1234,7 @@ a[href*="github.com/pulls"]:hover {
     border: 1px solid #1a1a1a;
 }
 .os-tab {
-    background: transparent; color: #737373; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px;
+    background: transparent; color: #8a8a8a; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px;
     font-weight: 500; cursor: pointer; transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 .os-tab:hover { color: #e5e5e5; }
@@ -1238,8 +1247,8 @@ a[href*="github.com/pulls"]:hover {
     padding: 16px;
     display: flex; flex-direction: column; gap: 12px; text-decoration: none;
 }
-.pr-header { display: flex; align-items: center; gap: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; color: #737373; }
-.pr-repo { color: #a3a3a3; transition: color 0.2s; }
+.pr-header { display: flex; align-items: center; gap: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 14px; color: #8a8a8a; }
+.pr-repo { color: #b3b3b3; transition: color 0.2s; }
 .pr-repo:hover { color: #fafafa; text-decoration: underline; }
 .pr-title { font-size: 15px; font-weight: 500; color: #fafafa; line-height: 1.4; flex-grow: 1; }
 .pr-badge {
@@ -1254,7 +1263,7 @@ a[href*="github.com/pulls"]:hover {
 /* ==========================================
    Codolio / LeetCode Section (extracted from inline)
    ========================================== */
-#leetcode { max-width: 720px; margin: 0 auto; padding-top: 10px; }
+#leetcode { padding-top: 10px; }
 .lc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
 .lc-header h2 { font-size: 20px; font-weight: 600; color: #fafafa; margin: 0; }
 
@@ -1272,35 +1281,39 @@ a[href*="github.com/pulls"]:hover {
 .lc-user { display: flex; align-items: center; gap: 14px; }
 .lc-avatar { width: 44px; height: 44px; border-radius: 12px; background: #171717; border: 1px solid #262626; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .lc-username { font-weight: 600; font-size: 16px; color: #fafafa; }
-.lc-rank { font-size: 12px; color: #737373; margin-top: 2px; }
+.lc-rank { font-size: 14px; color: #8a8a8a; margin-top: 2px; }
 .lc-total { text-align: right; }
 .lc-total-num { font-size: 32px; font-weight: 700; color: #fafafa; line-height: 1; }
-.lc-total-label { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.lc-total-label { font-size: 11px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 
 .lc-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; position: relative; z-index: 1; }
-.lc-bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-.lc-bar-label span:first-child { color: #a3a3a3; }
+.lc-bar-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+.lc-bar-label span:first-child { color: #b3b3b3; }
 .lc-bar-label span:last-child { color: #e5e5e5; font-weight: 500; }
-.lc-bar-label i { color: #525252; font-style: normal; }
+.lc-bar-label i { color: #8a8a8a; font-style: normal; }
 .lc-track { height: 6px; background: #171717; border-radius: 3px; overflow: hidden; }
 .lc-fill { height: 100%; border-radius: 3px; }
 
 .lc-heatmap-wrap { margin-bottom: 20px; position: relative; z-index: 1; }
-.lc-heatmap-header { display: flex; justify-content: space-between; font-size: 12px; color: #737373; margin-bottom: 10px; }
+.lc-heatmap-header { display: flex; justify-content: space-between; font-size: 12px; color: #8a8a8a; margin-bottom: 10px; }
 .lc-heatmap { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; }
 .lc-heatmap div { border-radius: 2px; aspect-ratio: 1/1; transition: transform 0.15s; }
 .lc-heatmap div:hover { transform: scale(1.3); position: relative; z-index: 10; }
 .lc-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 8px; }
-.lc-legend span { font-size: 10px; color: #525252; }
+.lc-legend span { font-size: 10px; color: #8a8a8a; }
 .lc-legend-dots { display: flex; gap: 2px; }
 .lc-legend-dots div { width: 8px; height: 8px; border-radius: 1px; }
 
 .lc-footer { display: flex; gap: 24px; flex-wrap: wrap; position: relative; z-index: 1; }
-.lc-ft-label { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.lc-ft-label { font-size: 11px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
 .lc-ft-val { font-size: 13px; color: #e5e5e5; font-weight: 500; }
 
 .lc-quote { 
-    margin-top: 24px; font-size: 14px; color: #a3a3a3; font-style: italic; 
+    margin-top: 24px; font-size: 14px; color: #b3b3b3; font-style: italic; 
     border-left: 3px solid #f59e0b; padding-left: 16px; background: rgba(245, 158, 11, 0.05);
     padding-top: 12px; padding-bottom: 12px; border-radius: 0 8px 8px 0;
 }
+
+/* Skeleton animation */
+@keyframes pulse-sk { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+.skeleton-box { background: #1a1a1a; border-radius: 12px; animation: pulse-sk 1.5s infinite ease-in-out; }
