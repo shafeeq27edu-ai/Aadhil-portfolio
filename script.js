@@ -236,18 +236,24 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchWithRetryAndCache('/api/repos', 'gh_repos_cache', 3600000)
             .then(data => {
                 if (data.error) throw new Error(data.error);
-                allRepos = data;
-                
-                // Determine which 3 to show
-                let pinned = [];
-                if (PINNED_REPOS && PINNED_REPOS.length > 0) {
-                    pinned = PINNED_REPOS.map(name => allRepos.find(r => r.name === name)).filter(Boolean);
+                if (!Array.isArray(data.all)) {
+                    localStorage.removeItem('gh_repos_cache');
+                    throw new Error('Unexpected repositories response');
                 }
-                
-                // Fallback to top 3 recently updated if config is missing/invalid
+
+                allRepos = data.all;
+
+                // Prefer repos pinned on GitHub, then the local fallback list, then recent repos.
+                let pinned = Array.isArray(data.pinned) ? data.pinned.slice(0, 3) : [];
+                if (pinned.length < 3 && PINNED_REPOS.length > 0) {
+                    const localPinned = PINNED_REPOS
+                        .map(name => allRepos.find(r => r.name === name))
+                        .filter(r => r && !pinned.some(p => p.name === r.name));
+                    pinned = pinned.concat(localPinned);
+                }
                 if (pinned.length < 3) {
-                    const remaining = allRepos.filter(r => !pinned.includes(r)).slice(0, 3 - pinned.length);
-                    pinned = pinned.concat(remaining);
+                    const remaining = allRepos.filter(r => !pinned.some(p => p.name === r.name));
+                    pinned = pinned.concat(remaining.slice(0, 3 - pinned.length));
                 }
                 
                 pinnedGrid.innerHTML = pinned.map(r => getRepoCardHTML(r)).join('');

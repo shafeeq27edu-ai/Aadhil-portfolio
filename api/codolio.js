@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     // LeetCode GraphQL request for user stats & calendar
     const currentYear = new Date().getFullYear();
     const lcQuery = `
-      query getUserProfile($username: String!) {
+      query getUserProfile($username: String!, $year: Int!) {
         matchedUser(username: $username) {
           submitStats: submitStatsGlobal {
             acSubmissionNum {
@@ -27,15 +27,17 @@ export default async function handler(req, res) {
               count
             }
           }
-        }
-        userCalendar(year: ${currentYear}) {
-          submissionCalendar
+          userCalendar(year: $year) {
+            submissionCalendar
+          }
         }
       }
     `;
 
-    const controller = new AbortController();
-    const fetchTimeout = setTimeout(() => controller.abort(), 6000);
+    const lcController = new AbortController();
+    const lcTimeout = setTimeout(() => lcController.abort(), 6000);
+    const cfController = new AbortController();
+    const cfTimeout = setTimeout(() => cfController.abort(), 6000);
 
     const [lcRes, cfRes] = await Promise.allSettled([
       fetch('https://leetcode.com/graphql', {
@@ -44,14 +46,15 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
           'Referer': 'https://leetcode.com',
         },
-        body: JSON.stringify({ query: lcQuery, variables: { username } }),
-        signal: controller.signal,
+        body: JSON.stringify({ query: lcQuery, variables: { username, year: currentYear } }),
+        signal: lcController.signal,
       }),
       fetch(`https://codeforces.com/api/user.info?handles=${username}`, {
-        signal: controller.signal,
+        signal: cfController.signal,
       })
     ]);
-    clearTimeout(fetchTimeout);
+    clearTimeout(lcTimeout);
+    clearTimeout(cfTimeout);
 
     let leetcode = null;
     let codeforces = null;
@@ -59,16 +62,17 @@ export default async function handler(req, res) {
     if (lcRes.status === 'fulfilled' && lcRes.value.ok) {
       const lcData = await lcRes.value.json();
       if (lcData.data && lcData.data.matchedUser) {
-        const stats = lcData.data.matchedUser.submitStats.acSubmissionNum;
+        const userNode = lcData.data.matchedUser;
+        const stats = userNode.submitStats.acSubmissionNum;
         const getCount = (diff) => {
           const item = stats.find(s => s.difficulty === diff);
           return item ? item.count : 0;
         };
         
         let calendar = {};
-        if (lcData.data.userCalendar && lcData.data.userCalendar.submissionCalendar) {
+        if (userNode.userCalendar && userNode.userCalendar.submissionCalendar) {
           try {
-             calendar = JSON.parse(lcData.data.userCalendar.submissionCalendar);
+             calendar = JSON.parse(userNode.userCalendar.submissionCalendar);
           } catch(e) {}
         }
         
