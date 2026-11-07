@@ -35,6 +35,28 @@ html {
     scroll-behavior: smooth;
 }
 
+.skip-link {
+    position: absolute;
+    top: -4rem;
+    left: 1rem;
+    z-index: 2000;
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    background-color: var(--accent-amber);
+    color: #000000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-amber);
+    outline-offset: 3px;
+}
+
 /* Single merged body rule (Bug 2 fix) */
 body {
     background-color: var(--bg-color);
@@ -1065,14 +1087,72 @@ body::after {
    Responsive
    ========================================== */
 @media (max-width: 1024px) {
+    .layout-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding-top: 4.25rem;
+    }
+
     .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background-color: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    section {
+        scroll-margin-top: 4.5rem;
+    }
+
+    .index-nav {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .index-title {
         display: none;
+    }
+
+    .index-nav ul {
+        flex: 1;
+        min-width: 0;
+        flex-direction: row;
+        gap: 0.25rem;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .index-nav ul::-webkit-scrollbar {
+        display: none;
+    }
+
+    .index-nav a {
+        padding: 0.4rem 0.6rem 0.4rem 0.85rem;
+        border-radius: var(--radius-md);
+        white-space: nowrap;
+    }
+
+    .index-nav a.active {
+        background-color: var(--border-color);
+    }
+
+    .active-dot {
+        left: 0.35rem;
     }
 }
 
 @media (max-width: 900px) {
     .layout-wrapper {
-        padding: 1.5rem;
+        padding: 4.25rem 1.5rem 1.5rem;
     }
 }
 
@@ -1190,9 +1270,10 @@ a[href*="github.com/pulls"]:hover {
 .repo-modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8);
     backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.3s, visibility 0s linear 0.3s; padding: 20px;
 }
-.repo-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.repo-modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.3s; }
 .repo-modal {
     background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; width: 100%; max-width: 600px;
     max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
@@ -1209,6 +1290,7 @@ a[href*="github.com/pulls"]:hover {
     padding: 10px 14px; color: #fafafa; font-size: 14px; outline: none; transition: border-color 0.2s;
 }
 .repo-modal-search input:focus { border-color: #787878; }
+.repo-modal-search input:focus-visible { outline: 2px solid var(--accent-amber); outline-offset: 2px; }
 .repo-modal-list { flex-grow: 1; overflow-y: auto; padding: 12px 24px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
 
 /* Inherit gh-more styling if any leftover uses it */
@@ -1317,3 +1399,22 @@ a[href*="github.com/pulls"]:hover {
 /* Skeleton animation */
 @keyframes pulse-sk { 0%,100%{opacity:1;} 50%{opacity:.5;} }
 .skeleton-box { background: #1a1a1a; border-radius: 12px; animation: pulse-sk 1.5s infinite ease-in-out; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .section-reveal {
+        opacity: 1;
+        transform: none;
+    }
+}

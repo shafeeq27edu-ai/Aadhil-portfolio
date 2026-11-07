@@ -87,15 +87,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const sections = document.querySelectorAll("section");
     const navLinks = document.querySelectorAll(".index-nav ul li a");
 
+    function setActiveNav(link) {
+        navLinks.forEach((item) => {
+            item.classList.remove("active");
+            item.removeAttribute("aria-current");
+        });
+        if (link) {
+            link.classList.add("active");
+            link.setAttribute("aria-current", "location");
+        }
+    }
+
     if (sections.length > 0 && navLinks.length > 0) {
         const observerOptions = { root: null, rootMargin: "-20% 0px -60% 0px", threshold: 0 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    navLinks.forEach((link) => link.classList.remove("active"));
                     const activeId = entry.target.getAttribute("id");
-                    const activeLink = document.querySelector(`.index-nav ul li a[href="#${activeId}"]`);
-                    if (activeLink) activeLink.classList.add("active");
+                    setActiveNav(document.querySelector(`.index-nav ul li a[href="#${activeId}"]`));
                 }
             });
         }, observerOptions);
@@ -105,9 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Bottom-of-page fallback: activate the last section
         window.addEventListener('scroll', () => {
             if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50)) {
-                navLinks.forEach((link) => link.classList.remove("active"));
-                const lastLink = navLinks[navLinks.length - 1];
-                if (lastLink) lastLink.classList.add("active");
+                setActiveNav(navLinks[navLinks.length - 1]);
             }
         }, { passive: true });
     }
@@ -135,9 +142,14 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 if(data.error || data.fallback || !data.weeks || data.weeks.length === 0) {
                     ghHeatmap.innerHTML = fallbackHTML;
+                    ghHeatmap.removeAttribute('role');
+                    ghHeatmap.removeAttribute('aria-label');
                     return;
                 }
-                
+
+                ghHeatmap.setAttribute('role', 'img');
+                ghHeatmap.setAttribute('aria-label', `${data.total || 0} GitHub contributions in the last year`);
+
                 if (data._stale && totalSpan) {
                     totalSpan.innerHTML = `${data.total || 0} contributions in the last year <span style="color:#f59e0b; font-size:12px; margin-left:8px;">(last updated ${new Date(data._lastUpdated).toLocaleDateString()})</span>`;
                 } else if (totalSpan) {
@@ -199,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(err => {
                 console.error("Failed to load GitHub heatmap:", err);
                 ghHeatmap.innerHTML = fallbackHTML;
+                ghHeatmap.removeAttribute('role');
+                ghHeatmap.removeAttribute('aria-label');
             });
     }
     
@@ -314,25 +328,62 @@ document.addEventListener("DOMContentLoaded", () => {
         modalList.innerHTML = reposToRender.map(r => getRepoCardHTML(r)).join('');
     }
 
-    // Helper to close modal
+    let lastFocusedElement = null;
+
+    function getFocusableElements(container) {
+        return Array.from(container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+            .filter((el) => !el.disabled && el.offsetParent !== null);
+    }
+
+    function openModal() {
+        lastFocusedElement = document.activeElement;
+        modalOverlay.inert = false;
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        modalOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        if (searchInput) searchInput.focus();
+        else modalClose.focus();
+    }
+
     function closeModal() {
-        if (modalOverlay) {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
+        if (!modalOverlay) return;
+        modalOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
         }
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        modalOverlay.inert = true;
     }
 
     if (viewAllBtn && modalOverlay && modalClose) {
-        viewAllBtn.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            if (searchInput) searchInput.focus();
-        });
+        viewAllBtn.addEventListener('click', openModal);
 
         modalClose.addEventListener('click', closeModal);
 
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) closeModal();
+        });
+
+        // Keep keyboard focus inside the open dialog
+        modalOverlay.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab' || !modalOverlay.classList.contains('active')) return;
+            const focusable = getFocusableElements(modalOverlay);
+            if (focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (!modalOverlay.contains(document.activeElement)) {
+                e.preventDefault();
+                first.focus();
+            } else if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         });
         
         // Escape key to close modal
@@ -401,6 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (data.fallback || data.error) {
                 codolioLoading.innerHTML = codolioFallbackHTML;
+                lcGrid.setAttribute('aria-label', 'LeetCode activity data unavailable.');
                 return;
             }
             
@@ -454,7 +506,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Render LeetCode Heatmap
             const cal = data.leetcode ? data.leetcode.calendar : {};
-            
+            const totalSubmissions = Object.values(cal).reduce((sum, count) => sum + count, 0);
+            lcGrid.setAttribute('aria-label', `LeetCode activity: ${totalSubmissions} submissions in the last 6 months`);
+
             const today = new Date();
             today.setHours(0,0,0,0);
             const startDate = new Date(today);
@@ -488,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch(e) {
             console.error('Codolio fetch error:', e);
             codolioLoading.innerHTML = codolioFallbackHTML;
+            lcGrid.setAttribute('aria-label', 'LeetCode activity data unavailable.');
         }
     })();
 
@@ -601,8 +656,12 @@ document.addEventListener("DOMContentLoaded", () => {
         
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-pressed', 'false');
+                });
                 tab.classList.add('active');
+                tab.setAttribute('aria-pressed', 'true');
                 render(tab.dataset.filter);
             });
         });

@@ -26,12 +26,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
+    <noscript>
+        <style>.section-reveal { opacity: 1; transform: none; }</style>
+    </noscript>
 </head>
 <body>
 
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
     <div class="layout-wrapper">
         <!-- Main Content Column -->
-        <main class="main-content">
+        <main class="main-content" id="main-content">
             
             <!-- Hero Section -->
             <section id="hero" class="section hero-section">
@@ -126,7 +131,7 @@
                 </div>
 
                 <div class="exp-view-all">
-                    <button class="btn-view-all">View All &nearr;</button>
+                    <button type="button" class="btn-view-all">View All &nearr;</button>
                 </div>
             </section>
 
@@ -142,7 +147,7 @@
                             <div class="hover-overlay">
                                 <span>View Project &nearr;</span>
                             </div>
-                            <a href="https://github.com/shafeeq27edu-ai/UrbanSheild-2.0-AI-" target="_blank" rel="noopener noreferrer" class="external-link-icon">
+                            <a href="https://github.com/shafeeq27edu-ai/UrbanSheild-2.0-AI-" target="_blank" rel="noopener noreferrer" class="external-link-icon" aria-label="Open Urban Shield AI on GitHub">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                             </a>
                         </div>
@@ -172,7 +177,7 @@
                             <div class="hover-overlay">
                                 <span>View Project &nearr;</span>
                             </div>
-                            <a href="https://github.com/shafeeq27edu-ai/Trackr" target="_blank" rel="noopener noreferrer" class="external-link-icon">
+                            <a href="https://github.com/shafeeq27edu-ai/Trackr" target="_blank" rel="noopener noreferrer" class="external-link-icon" aria-label="Open Trackr on GitHub">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                             </a>
                         </div>
@@ -202,7 +207,7 @@
                             <div class="hover-overlay">
                                 <span>View Project &nearr;</span>
                             </div>
-                            <a href="https://github.com/shafeeq27edu-ai/dayflow-hrms" target="_blank" rel="noopener noreferrer" class="external-link-icon">
+                            <a href="https://github.com/shafeeq27edu-ai/dayflow-hrms" target="_blank" rel="noopener noreferrer" class="external-link-icon" aria-label="Open Dayflow HRMS on GitHub">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                             </a>
                         </div>
@@ -231,7 +236,7 @@
                             <div class="hover-overlay">
                                 <span>View Project &nearr;</span>
                             </div>
-                            <a href="https://github.com/shafeeq27edu-ai/agenta" target="_blank" rel="noopener noreferrer" class="external-link-icon">
+                            <a href="https://github.com/shafeeq27edu-ai/agenta" target="_blank" rel="noopener noreferrer" class="external-link-icon" aria-label="Open Agentic AI Experiments on GitHub">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                             </a>
                         </div>
@@ -266,17 +271,17 @@
                   <span id="gh-total-contribs">Last 52 weeks</span>
                 </div>
                 <div class="gh-heatmap-container">
-                  <div class="gh-heatmap-months" id="gh-heatmap-months"></div>
+                  <div class="gh-heatmap-months" id="gh-heatmap-months" aria-hidden="true"></div>
                   <div class="gh-heatmap-body">
-                    <div class="gh-heatmap-days">
+                    <div class="gh-heatmap-days" aria-hidden="true">
                       <span>Mon</span>
                       <span>Wed</span>
                       <span>Fri</span>
                     </div>
-                    <div class="gh-heatmap" id="gh-heatmap"></div>
+                    <div class="gh-heatmap" id="gh-heatmap" role="img" aria-label="GitHub contribution graph for the last year"></div>
                   </div>
                 </div>
-                <div class="gh-legend">
+                <div class="gh-legend" aria-hidden="true">
                   <span>Less</span>
                   <div class="gh-legend-dots">
                     <div style="background:#171717"></div>
@@ -309,7 +314,7 @@
                     <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
                 </div>
                 <div class="pinned-view-all" style="text-align: center; margin-top: 24px;">
-                    <button id="view-all-repos-btn" class="btn-view-all">View All Repositories &nearr;</button>
+                    <button id="view-all-repos-btn" type="button" class="btn-view-all">View All Repositories &nearr;</button>
                 </div>
             </section>
             
@@ -322,18 +327,18 @@
                   <span id="os-count" class="os-section-count">Loading...</span>
                 </div>
                 <div class="os-card-wrapper card">
-                  <div class="os-tabs">
-                    <button class="os-tab active" data-filter="all">All</button>
-                    <button class="os-tab" data-filter="open">Open</button>
-                    <button class="os-tab" data-filter="merged">Merged</button>
-                    <button class="os-tab" data-filter="closed">Closed</button>
+                  <div class="os-tabs" role="group" aria-label="Filter pull requests by status">
+                    <button type="button" class="os-tab active" data-filter="all" aria-pressed="true">All</button>
+                    <button type="button" class="os-tab" data-filter="open" aria-pressed="false">Open</button>
+                    <button type="button" class="os-tab" data-filter="merged" aria-pressed="false">Merged</button>
+                    <button type="button" class="os-tab" data-filter="closed" aria-pressed="false">Closed</button>
                   </div>
                   <div id="os-list" class="os-grid">
                       <div class="skeleton-box" style="height: 80px; width: 100%;"></div>
                       <div class="skeleton-box" style="height: 80px; width: 100%;"></div>
                   </div>
                   <div class="os-view-all-center">
-                    <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" class="btn-view-all">View All on GitHub &nearr;</a>
+                    <a href="https://github.com/pulls?q=is%3Apr+author%3Ashafeeq27edu-ai" target="_blank" rel="noopener noreferrer" class="btn-view-all">View All on GitHub &nearr;</a>
                   </div>
                 </div>
             </section>
@@ -370,7 +375,7 @@
                   <h2 class="section-header" style="margin-bottom: 4px;">The Grind</h2>
                   <div class="lc-section-header-subtitle">LeetCode + Codeforces</div>
                 </div>
-                <a href="https://codolio.com/profile/shafeeq_27" target="_blank" class="btn-view-all" style="margin:0;">View Profile &nearr;</a>
+                <a href="https://codolio.com/profile/shafeeq_27" target="_blank" rel="noopener noreferrer" class="btn-view-all" style="margin:0;">View Profile &nearr;</a>
               </div>
             
               <div class="lc-card card">
@@ -388,8 +393,8 @@
                       <span>Activity Heatmap</span>
                       <span>Last 6 Months</span>
                     </div>
-                    <div class="lc-heatmap" id="lc-heatmap"></div>
-                    <div class="lc-legend">
+                    <div class="lc-heatmap" id="lc-heatmap" role="img" aria-label="LeetCode submission activity for the last 6 months"></div>
+                    <div class="lc-legend" aria-hidden="true">
                       <span>Less</span>
                       <div class="lc-legend-dots">
                         <div style="background:#171717"></div>
@@ -420,7 +425,7 @@
                     <div class="blog-empty-icon">✍️</div>
                     <div class="blog-empty-title">Coming Soon</div>
                     <p>Deep dives on AI systems, security research, and building in public.</p>
-                    <button class="btn-subscribe">Subscribe for Updates</button>
+                    <button type="button" class="btn-subscribe">Subscribe for Updates</button>
                 </div>
             </section>
             
@@ -478,10 +483,10 @@
 
         <!-- Right Sidebar Index -->
         <aside class="sidebar">
-            <nav class="index-nav">
+            <nav class="index-nav" aria-label="Section index">
                 <span class="index-title stats-mono">INDEX</span>
                 <ul>
-                    <li><a href="#hero" class="active"><span class="active-dot"></span>Hero</a></li>
+                    <li><a href="#hero" class="active" aria-current="location"><span class="active-dot"></span>Hero</a></li>
                     <li><a href="#experience"><span class="active-dot"></span>Experience</a></li>
                     <li><a href="#projects"><span class="active-dot"></span>Projects</a></li>
                     <li><a href="#github"><span class="active-dot"></span>GitHub</a></li>
@@ -497,14 +502,14 @@
     </div>
     
     <!-- Repositories Modal -->
-    <div id="repo-modal-overlay" class="repo-modal-overlay">
-        <div class="repo-modal">
+    <div id="repo-modal-overlay" class="repo-modal-overlay" aria-hidden="true" inert>
+        <div class="repo-modal" role="dialog" aria-modal="true" aria-labelledby="repo-modal-title">
             <div class="repo-modal-header">
-                <h3>All Repositories</h3>
-                <button id="repo-modal-close" class="repo-modal-close">&times;</button>
+                <h3 id="repo-modal-title">All Repositories</h3>
+                <button id="repo-modal-close" class="repo-modal-close" type="button" aria-label="Close repositories dialog">&times;</button>
             </div>
             <div class="repo-modal-search">
-                <input type="text" id="repo-search-input" placeholder="Search repositories...">
+                <input type="text" id="repo-search-input" placeholder="Search repositories..." aria-label="Search repositories" autocomplete="off">
             </div>
             <div id="repo-modal-list" class="repo-modal-list">
                 <div class="loading-placeholder">Loading...</div>
