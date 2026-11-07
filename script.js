@@ -1,5 +1,23 @@
 const PINNED_REPOS = ['UrbanSheild-2.0-AI-', 'Trackr', 'agenta'];
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function safeUrl(value) {
+    if (!value) return '#';
+    try {
+        const url = new URL(String(value), window.location.origin);
+        if (url.protocol === 'https:' || url.protocol === 'http:') return escapeHtml(url.href);
+    } catch (e) {}
+    return '#';
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // --- Resilient Fetch Helper ---
     async function fetchWithRetryAndCache(url, cacheKey, ttl = 3600000) {
@@ -28,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const data = await fetchOnce(8000);
-            if (!data.error && !data.fallback) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+            if (!data.error && !data.fallback && !data.partial) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
             return data;
         } catch(err1) {
             console.warn(`Fetch ${url} failed:`, err1);
@@ -36,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn(`Retrying fetch ${url}...`);
                 try {
                     const data = await fetchOnce(8000);
-                    if (!data.error && !data.fallback) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+                    if (!data.error && !data.fallback && !data.partial) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
                     return data;
                 } catch(err2) {
                     console.error(`Fetch ${url} failed after retry.`, err2);
@@ -216,14 +234,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Generate Repo Card HTML
     function getRepoCardHTML(repo) {
         return `
-            <a href="${repo.html_url}" class="pinned-repo-card card" target="_blank" rel="noopener noreferrer">
+            <a href="${safeUrl(repo.html_url)}" class="pinned-repo-card card" target="_blank" rel="noopener noreferrer">
                 <div class="pinned-repo-title">
                     <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
-                    ${repo.name}
+                    ${escapeHtml(repo.name)}
                 </div>
-                <div class="pinned-repo-desc">${repo.description || 'No description provided.'}</div>
+                <div class="pinned-repo-desc">${escapeHtml(repo.description || 'No description provided.')}</div>
                 <div class="pinned-repo-meta">
-                    ${repo.language ? `<span><span class="gh-dot" style="background:${getLangColor(repo.language)}"></span>${repo.language}</span>` : ''}
+                    ${repo.language ? `<span><span class="gh-dot" style="background:${getLangColor(repo.language)}"></span>${escapeHtml(repo.language)}</span>` : ''}
                     ${repo.stargazers_count > 0 ? `<span>⭐ ${repo.stargazers_count}</span>` : ''}
                     ${repo.forks_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${repo.forks_count}</span>` : ''}
                     <span>${formatDate(repo.updated_at)}</span>
@@ -475,47 +493,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- GitHub Open Source PRs & Stats ---
     (async function loadGitHubPRs() {
-        const CACHE_KEY = 'gh_data_v3';
-        const CACHE_MS = 10 * 60 * 1000;
         const listEl = document.getElementById('os-list');
         const countEl = document.getElementById('os-count');
         const ghStatsEl = document.getElementById('gh-stats');
         const tabs = document.querySelectorAll('.os-tab');
-        let prs = [], user = null, fromCache = false;
-        
+
         if (!listEl) return;
 
+        let data = null;
         try {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-                const parsed = JSON.parse(cached);
-                if (Date.now() - parsed.time < CACHE_MS) { prs = parsed.prs; user = parsed.user; fromCache = true; }
-            }
-        } catch(e) {}
-        
-        if (!fromCache) {
-            try {
-                const [userRes, prRes] = await Promise.all([
-                    fetch('https://api.github.com/users/shafeeq27edu-ai'),
-                    fetch('https://api.github.com/search/issues?q=author:shafeeq27edu-ai+type:pr+sort:created-desc&per_page=50')
-                ]);
-                if (userRes.ok) user = await userRes.json();
-                if (prRes.ok) {
-                    const data = await prRes.json();
-                    prs = (data.items || []).map(pr => {
-                        const repoName = pr.repository_url.replace('https://api.github.com/repos/', '');
-                        let status = 'Open', color = '#22c55e';
-                        if (pr.state === 'closed') {
-                            if (pr.pull_request && pr.pull_request.merged_at) { status = 'Merged'; color = '#a855f7'; }
-                            else { status = 'Closed'; color = '#ef4444'; }
-                        }
-                        return { title: pr.title, repo: repoName, number: pr.number, status, color, url: pr.html_url, category: status.toLowerCase() };
-                    }).filter(pr => !pr.repo.startsWith('shafeeq27edu-ai/'));
-                    localStorage.setItem(CACHE_KEY, JSON.stringify({ prs, user, time: Date.now() }));
-                }
-            } catch (err) { console.error('GitHub API error:', err); }
+            data = await fetchWithRetryAndCache('/api/prs', 'gh_prs_cache_v4', 3600000);
+        } catch (err) {
+            console.error('GitHub PRs fetch error:', err);
         }
-        
+
+        const prs = data && Array.isArray(data.prs) ? data.prs : [];
+        const user = data && data.user ? data.user : null;
+        const totalCount = data && Number.isFinite(data.totalCount) ? data.totalCount : prs.length;
+
         if (user) {
             const openCount = prs.filter(p => p.category === 'open').length;
             const mergedCount = prs.filter(p => p.category === 'merged').length;
@@ -526,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                         <span class="gh-stat-title">Public Repos</span>
                       </div>
-                      <div class="gh-stat-value">${user.public_repos}</div>
+                      <div class="gh-stat-value">${escapeHtml(user.public_repos)}</div>
                     </div>
                     
                     <div class="gh-stat-card">
@@ -534,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                         <span class="gh-stat-title">Followers</span>
                       </div>
-                      <div class="gh-stat-value">${user.followers}</div>
+                      <div class="gh-stat-value">${escapeHtml(user.followers)}</div>
                     </div>
                     
                     <div class="gh-stat-card">
@@ -554,9 +549,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `;
             }
-        } else { if (ghStatsEl) ghStatsEl.innerHTML = '<span class="loading-placeholder">Stats unavailable</span>'; }
-        
-        if (countEl) countEl.textContent = (prs.length || 0) + ' public PRs';
+        } else if (ghStatsEl) {
+            ghStatsEl.innerHTML = '<span class="loading-placeholder">Stats unavailable</span>';
+        }
+
+        if (countEl) countEl.textContent = data ? `${totalCount} public PRs` : 'PRs unavailable';
         
         function render(filter) {
             let filtered = prs;
@@ -578,15 +575,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 
                 return `
-                <a href="${pr.url}" class="pr-card card" target="_blank" rel="noopener noreferrer">
+                <a href="${safeUrl(pr.url)}" class="pr-card card" target="_blank" rel="noopener noreferrer">
                     <div class="pr-header">
                       <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
-                      <span class="pr-repo">${pr.repo}</span>
-                      <span>#${pr.number}</span>
+                      <span class="pr-repo">${escapeHtml(pr.repo)}</span>
+                      <span>#${escapeHtml(pr.number)}</span>
                     </div>
-                    <div class="pr-title">${pr.title}</div>
+                    <div class="pr-title">${escapeHtml(pr.title)}</div>
                     <div class="pr-badge ${badgeClass}">
-                      ${icon} ${pr.status}
+                      ${icon} ${escapeHtml(pr.status)}
                     </div>
                 </a>
                 `;
