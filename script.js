@@ -1,4 +1,4 @@
-const PINNED_REPOS = ['UrbanSheild-2.0-AI-', 'Trackr', 'agenta'];
+const PINNED_REPOS = ['UrbanSheild-2.0-AI-', 'Trackr', 'Mozhi'];
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -20,9 +20,10 @@ function safeUrl(value) {
 
 document.addEventListener("DOMContentLoaded", () => {
     // --- Resilient Fetch Helper ---
-    async function fetchWithRetryAndCache(url, cacheKey, ttl = 3600000) {
+    async function fetchWithRetryAndCache(url, cacheKey, ttl = 3600000, options = {}) {
+        const { force = false } = options;
         const cached = localStorage.getItem(cacheKey);
-        if (cached) {
+        if (cached && !force) {
             try {
                 const parsed = JSON.parse(cached);
                 if (Date.now() - parsed.timestamp < ttl) return parsed.data;
@@ -44,9 +45,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
+        const isComplete = (data) => data && !data.error && !data.fallback && !data.partial && !data.degraded && !data.stale;
+
         try {
             const data = await fetchOnce(8000);
-            if (!data.error && !data.fallback && !data.partial) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+            if (isComplete(data)) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
             return data;
         } catch(err1) {
             console.warn(`Fetch ${url} failed:`, err1);
@@ -54,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn(`Retrying fetch ${url}...`);
                 try {
                     const data = await fetchOnce(8000);
-                    if (!data.error && !data.fallback && !data.partial) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+                    if (isComplete(data)) localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
                     return data;
                 } catch(err2) {
                     console.error(`Fetch ${url} failed after retry.`, err2);
@@ -74,14 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // --- Mouse Spotlight on Cards ---
-    document.querySelectorAll('.card, .project-card, .exp-card, .highlight-card').forEach(c => {
-        c.onmousemove = e => { 
-            const rect = c.getBoundingClientRect(); 
-            c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-            c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-        };
-    });
+    // --- Build log masthead date ---
+    const buildlogDate = document.getElementById('buildlog-date');
+    if (buildlogDate) {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        buildlogDate.textContent = `${now.getUTCFullYear()}.${pad(now.getUTCMonth() + 1)}.${pad(now.getUTCDate())}`;
+        buildlogDate.dateTime = now.toISOString().slice(0, 10);
+    }
 
     // --- Sidebar Intersection Observer ---
     const sections = document.querySelectorAll("section");
@@ -119,102 +122,220 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { passive: true });
     }
 
+    // --- Heatmap Helpers (shared by GitHub and LeetCode) ---
+    const HEATMAP_COLORS = ['#171717', '#3d2a0b', '#6b4a16', '#b07824', '#f59e0b'];
+    const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const DAY_MS = 86400000;
+    const WEEK_MS = 7 * DAY_MS;
+
+    function dateKeyToUTC(key) {
+        const [year, month, day] = key.split('-').map(Number);
+        return Date.UTC(year, month - 1, day);
+    }
+
+    function formatDayLabel(key) {
+        return new Date(dateKeyToUTC(key)).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            timeZone: 'UTC',
+        });
+    }
+
+    function relativeTime(iso) {
+        const then = Date.parse(iso);
+        if (!Number.isFinite(then)) return '';
+        const minutes = Math.floor((Date.now() - then) / 60000);
+        if (minutes < 1) return 'just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        return `${Math.floor(hours / 24)}d ago`;
+    }
+
+    function setUpdatedLabel(element, fetchedAt, stale = false) {
+        if (!element) return;
+        if (!fetchedAt) {
+            element.textContent = '';
+            delete element.dataset.fetchedAt;
+            return;
+        }
+        element.dataset.fetchedAt = fetchedAt;
+        element.dataset.stale = stale ? 'true' : 'false';
+        element.textContent = `${stale ? 'Cached' : 'Updated'} ${relativeTime(fetchedAt)}`;
+    }
+
+    function heatmapTooltip() {
+        let tooltip = document.querySelector('.heatmap-tooltip');
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'heatmap-tooltip';
+            document.body.appendChild(tooltip);
+        }
+        return tooltip;
+    }
+
+    function levelFromCount(count, thresholds) {
+        if (count <= 0) return 0;
+        if (count <= thresholds[0]) return 1;
+        if (count <= thresholds[1]) return 2;
+        if (count <= thresholds[2]) return 3;
+        return 4;
+    }
+
+    function renderHeatmap({ grid, months, days, tooltip, noun, maxWeeks = 53 }) {
+        if (!grid) return null;
+
+        const clean = (Array.isArray(days) ? days : [])
+            .filter(day => day && /^\d{4}-\d{2}-\d{2}$/.test(day.date || ''))
+            .map(day => ({
+                date: day.date,
+                count: Math.max(0, Number(day.count) || 0),
+                level: Number.isInteger(day.level) ? Math.max(0, Math.min(4, day.level)) : null,
+            }))
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+        if (!clean.length) return null;
+
+        const firstMs = dateKeyToUTC(clean[0].date);
+        const lastMs = dateKeyToUTC(clean[clean.length - 1].date);
+        const alignedStart = firstMs - new Date(firstMs).getUTCDay() * DAY_MS;
+        const weeks = Math.min(maxWeeks, Math.floor((lastMs - alignedStart) / WEEK_MS) + 1);
+
+        const maxCount = clean.reduce((max, day) => Math.max(max, day.count), 0);
+        const thresholds = maxCount <= 4
+            ? [1, 2, 3, 4]
+            : [1, Math.ceil(maxCount * 0.25), Math.ceil(maxCount * 0.5), Math.ceil(maxCount * 0.75)];
+
+        const root = grid.closest('.heatmap');
+        if (root) root.style.setProperty('--weeks', String(weeks));
+        if (months) months.style.setProperty('--weeks', String(weeks));
+
+        const fragment = document.createDocumentFragment();
+        let total = 0;
+        let activeDays = 0;
+
+        for (const day of clean) {
+            const time = dateKeyToUTC(day.date);
+            const column = Math.floor((time - alignedStart) / WEEK_MS) + 1;
+            const row = new Date(time).getUTCDay() + 1;
+            if (column < 1 || column > weeks) continue;
+
+            const level = day.level === null ? levelFromCount(day.count, thresholds) : day.level;
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            cell.style.gridColumn = String(column);
+            cell.style.gridRow = String(row);
+            cell.style.background = HEATMAP_COLORS[level];
+            cell.setAttribute('aria-hidden', 'true');
+            cell.dataset.tip = `${day.count} ${noun}${day.count === 1 ? '' : 's'} on ${formatDayLabel(day.date)}`;
+
+            cell.addEventListener('mouseenter', () => {
+                const rect = cell.getBoundingClientRect();
+                tooltip.textContent = cell.dataset.tip;
+                tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                tooltip.style.top = `${rect.top}px`;
+                tooltip.classList.add('visible');
+            });
+            cell.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+            fragment.appendChild(cell);
+            total += day.count;
+            if (day.count > 0) activeDays += 1;
+        }
+
+        grid.replaceChildren(fragment);
+
+        // On narrow screens the grid scrolls horizontally; open on the most recent weeks.
+        const scroller = grid.closest('.heatmap-scroll');
+        if (scroller && scroller.scrollWidth > scroller.clientWidth && scroller.scrollLeft === 0) {
+            scroller.scrollLeft = scroller.scrollWidth;
+        }
+
+        if (months) {
+            const monthFragment = document.createDocumentFragment();
+            let lastMonth = -1;
+            let lastLabelColumn = -4;
+
+            for (let column = 1; column <= weeks; column += 1) {
+                const columnStart = alignedStart + (column - 1) * WEEK_MS;
+                const month = new Date(columnStart).getUTCMonth();
+                if (month === lastMonth) continue;
+                lastMonth = month;
+                if (column - lastLabelColumn < 4) continue;
+
+                const label = document.createElement('span');
+                label.textContent = MONTH_NAMES[month];
+                label.style.gridColumn = String(column);
+                monthFragment.appendChild(label);
+                lastLabelColumn = column;
+            }
+
+            months.replaceChildren(monthFragment);
+        }
+
+        return {
+            weeks,
+            total,
+            activeDays,
+            startDate: clean[0].date,
+            endDate: clean[clean.length - 1].date,
+            summary: `${total} ${noun}s across ${activeDays} active days, ${formatDayLabel(clean[0].date)} to ${formatDayLabel(clean[clean.length - 1].date)}`,
+        };
+    }
+
     // --- GitHub Heatmap Fetch & Render ---
-    const ghHeatmap = document.getElementById('gh-heatmap');
-    const ghMonths = document.getElementById('gh-heatmap-months');
-    const totalSpan = document.getElementById('gh-total-contribs');
-    
-    const fallbackHTML = `
-        <div style="grid-column: span 52; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; color: #8a8a8a; gap: 12px; grid-row: span 7;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-            <span style="font-size: 14px;">Couldn't load live data. <a href="https://github.com/shafeeq27edu-ai" target="_blank" style="color: #f59e0b; text-decoration: underline;">View on GitHub</a></span>
+    const GH_FALLBACK = `
+        <div class="heatmap-fallback">
+            <span>Live GitHub activity is unavailable right now.</span>
+            <a href="https://github.com/shafeeq27edu-ai" target="_blank" rel="noopener noreferrer">View on GitHub &nearr;</a>
         </div>
     `;
 
-    if (ghHeatmap && ghMonths) {
-        // Create tooltip element — use fixed positioning for correct placement
-        const tooltip = document.createElement('div');
-        tooltip.className = 'gh-tooltip';
-        document.body.appendChild(tooltip);
+    async function loadGitHubHeatmap(force = false, bustCache = false) {
+        const grid = document.getElementById('gh-heatmap');
+        const months = document.getElementById('gh-heatmap-months');
+        const totalEl = document.getElementById('gh-total-contribs');
+        const updatedEl = document.getElementById('gh-updated');
+        if (!grid) return;
 
-        // Fetch data
-        fetchWithRetryAndCache('/api/github', 'gh_heatmap_cache', 3600000)
-            .then(data => {
-                if(data.error || data.fallback || !data.weeks || data.weeks.length === 0) {
-                    ghHeatmap.innerHTML = fallbackHTML;
-                    ghHeatmap.removeAttribute('role');
-                    ghHeatmap.removeAttribute('aria-label');
-                    return;
-                }
+        try {
+            const url = bustCache ? `/api/github?refresh=${Date.now()}` : '/api/github';
+            const data = await fetchWithRetryAndCache(url, 'gh_heatmap_v2', 120000, { force });
 
-                ghHeatmap.setAttribute('role', 'img');
-                ghHeatmap.setAttribute('aria-label', `${data.total || 0} GitHub contributions in the last year`);
+            if (!data || data.fallback || !Array.isArray(data.days) || !data.days.length) {
+                throw new Error('No contribution data returned');
+            }
 
-                if (data._stale && totalSpan) {
-                    totalSpan.innerHTML = `${data.total || 0} contributions in the last year <span style="color:#f59e0b; font-size:12px; margin-left:8px;">(last updated ${new Date(data._lastUpdated).toLocaleDateString()})</span>`;
-                } else if (totalSpan) {
-                    totalSpan.textContent = `${data.total || 0} contributions in the last year`;
-                }
-
-                const weeks = data.weeks || [];
-                const colors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
-                
-                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                let currentMonth = -1;
-
-                weeks.forEach((week, weekIndex) => {
-                    if (week.contributionDays.length > 0) {
-                        const firstDayDate = new Date(week.contributionDays[0].date);
-                        const month = firstDayDate.getMonth();
-                        if (month !== currentMonth) {
-                            const monthSpan = document.createElement('span');
-                            monthSpan.textContent = monthNames[month];
-                            ghMonths.appendChild(monthSpan);
-                            currentMonth = month;
-                        } else if (weekIndex % 4 === 0) {
-                            // Add empty span to keep grid alignment roughly okay
-                            const emptySpan = document.createElement('span');
-                            ghMonths.appendChild(emptySpan);
-                        }
-                    }
-
-                    // For each day in the week
-                    week.contributionDays.forEach(day => {
-                        const count = day.contributionCount;
-                        let colorIdx = 0;
-                        if (count > 0 && count <= 3) colorIdx = 1;
-                        else if (count > 3 && count <= 6) colorIdx = 2;
-                        else if (count > 6 && count <= 9) colorIdx = 3;
-                        else if (count > 9) colorIdx = 4;
-
-                        const square = document.createElement('div');
-                        square.className = 'day-square';
-                        square.style.background = colors[colorIdx];
-                        
-                        // Tooltip logic — fixed positioning avoids scroll offset bugs
-                        square.addEventListener('mouseenter', () => {
-                            const rect = square.getBoundingClientRect();
-                            const dateStr = new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                            tooltip.textContent = `${count} contributions on ${dateStr}`;
-                            tooltip.style.left = (rect.left + rect.width / 2) + 'px';
-                            tooltip.style.top = rect.top + 'px';
-                            tooltip.classList.add('visible');
-                        });
-                        square.addEventListener('mouseleave', () => {
-                            tooltip.classList.remove('visible');
-                        });
-
-                        ghHeatmap.appendChild(square);
-                    });
-                });
-            })
-            .catch(err => {
-                console.error("Failed to load GitHub heatmap:", err);
-                ghHeatmap.innerHTML = fallbackHTML;
-                ghHeatmap.removeAttribute('role');
-                ghHeatmap.removeAttribute('aria-label');
+            const rendered = renderHeatmap({
+                grid,
+                months,
+                days: data.days,
+                tooltip: heatmapTooltip(),
+                noun: 'contribution',
             });
+            if (!rendered) throw new Error('Contribution data could not be rendered');
+
+            grid.setAttribute('role', 'img');
+            grid.setAttribute('aria-label', `GitHub contributions: ${rendered.summary}`);
+            grid.removeAttribute('aria-busy');
+
+            if (totalEl) totalEl.textContent = `${rendered.total} contributions · last year`;
+            setUpdatedLabel(updatedEl, data.fetchedAt, data.stale);
+        } catch (error) {
+            console.error('Failed to load GitHub heatmap:', error);
+            grid.style.setProperty('--weeks', '53');
+            grid.removeAttribute('role');
+            grid.removeAttribute('aria-label');
+            grid.removeAttribute('aria-busy');
+            if (months) months.replaceChildren();
+            grid.innerHTML = GH_FALLBACK;
+            if (totalEl) totalEl.textContent = 'Unavailable';
+            if (updatedEl) updatedEl.textContent = '';
+        }
     }
+
+    loadGitHubHeatmap();
     
     // --- Pinned Repositories Fetch & Modal ---
     const pinnedGrid = document.getElementById('pinned-repos-grid');
@@ -256,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="pinned-repo-desc">${escapeHtml(repo.description || 'No description provided.')}</div>
                 <div class="pinned-repo-meta">
                     ${repo.language ? `<span><span class="gh-dot" style="background:${getLangColor(repo.language)}"></span>${escapeHtml(repo.language)}</span>` : ''}
-                    ${repo.stargazers_count > 0 ? `<span>⭐ ${repo.stargazers_count}</span>` : ''}
+                    ${repo.stargazers_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.819 6.372a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg> ${repo.stargazers_count}</span>` : ''}
                     ${repo.forks_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${repo.forks_count}</span>` : ''}
                     <span>${formatDate(repo.updated_at)}</span>
                 </div>
@@ -292,25 +413,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if (data._stale) {
                     const staleHint = document.createElement('div');
-                    staleHint.style.gridColumn = '1 / -1';
-                    staleHint.style.color = '#f59e0b';
-                    staleHint.style.fontSize = '12px';
-                    staleHint.style.textAlign = 'center';
-                    staleHint.textContent = `⚠️ Showing cached repositories (last updated ${new Date(data._lastUpdated).toLocaleString()})`;
+                    staleHint.className = 'stale-hint';
+                    staleHint.textContent = `Showing cached repositories · last synced ${new Date(data._lastUpdated).toLocaleString()}`;
                     pinnedGrid.prepend(staleHint);
                 }
                 
                 // Populate Modal initially
                 renderModalList(allRepos);
-                
-                // Add mousemove effect to new cards
-                document.querySelectorAll('.pinned-repo-card').forEach(c => {
-                    c.onmousemove = e => { 
-                        const rect = c.getBoundingClientRect(); 
-                        c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-                        c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-                    };
-                });
             })
             .catch(err => {
                 console.error("Failed to load repos:", err);
@@ -410,141 +519,154 @@ document.addEventListener("DOMContentLoaded", () => {
     const subscribeBtn = document.querySelector('.btn-subscribe');
     if (subscribeBtn) {
         subscribeBtn.addEventListener('click', () => {
-            window.location.href = 'mailto:aadhilxshafeeq@gmail.com?subject=Subscribe%20to%20Blog%20Updates';
+            window.location.href = 'mailto:shafeeq27.edu@gmail.com?subject=Subscribe%20to%20Blog%20Updates';
         });
     }
 
-    // --- Scroll Reveal Animations ---
-    const revealSections = document.querySelectorAll('.section-reveal');
-    if (revealSections.length > 0) {
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                    revealObserver.unobserve(entry.target); // Only animate once
-                }
-            });
-        }, { root: null, rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+    // --- LeetCode Stats & Heatmap ---
+    const LC_FALLBACK = `
+        <div class="heatmap-fallback">
+            <span>Live LeetCode activity is unavailable right now.</span>
+            <a href="https://codolio.com/profile/shafeeq_27" target="_blank" rel="noopener noreferrer">View Codolio profile &nearr;</a>
+        </div>
+    `;
 
-        revealSections.forEach(section => revealObserver.observe(section));
-    }
-
-    // --- Codolio / LeetCode Stats & Heatmap ---
-    (async function loadCodolio() {
-        const lcGrid = document.getElementById('lc-heatmap');
-        const codolioLoading = document.getElementById('codolio-loading');
-        const codolioContent = document.getElementById('codolio-content');
+    async function loadLeetCode(force = false, bustCache = false) {
+        const grid = document.getElementById('lc-heatmap');
+        const months = document.getElementById('lc-heatmap-months');
+        const loading = document.getElementById('codolio-loading');
+        const content = document.getElementById('codolio-content');
         const statsEl = document.getElementById('codolio-stats');
-        
-        if (!lcGrid || !codolioLoading || !codolioContent || !statsEl) return;
+        const totalEl = document.getElementById('lc-total-submissions');
+        const updatedEl = document.getElementById('lc-updated');
 
-        const amberColors = ['#171717','#3d2a0b','#6b4a16','#b07824','#f59e0b'];
-        
-        const codolioFallbackHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; color: #8a8a8a; gap: 12px; width: 100%;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                <span style="font-size: 14px;">Couldn't load live data. <a href="https://codolio.com/profile/shafeeq_27" target="_blank" style="color: #fbbf24; text-decoration: underline;">View Codolio Profile</a></span>
-            </div>
-        `;
+        if (!grid || !loading || !content || !statsEl) return;
 
         try {
-            const data = await fetchWithRetryAndCache('/api/codolio', 'codolio_stats_cache', 3600000);
-            
-            if (data.fallback || data.error) {
-                codolioLoading.innerHTML = codolioFallbackHTML;
-                lcGrid.setAttribute('aria-label', 'LeetCode activity data unavailable.');
-                return;
+            const url = bustCache ? `/api/codolio?refresh=${Date.now()}` : '/api/codolio';
+            const data = await fetchWithRetryAndCache(url, 'codolio_stats_v2', 120000, { force });
+            const leetcode = data && data.leetcode;
+
+            if (!leetcode || !leetcode.window || !Array.isArray(leetcode.window.days)) {
+                throw new Error('No LeetCode data returned');
             }
-            
-            codolioLoading.style.display = 'none';
-            codolioContent.style.display = 'block';
-            
-            // Build stats
-            let statsHtml = '';
-            if (data.leetcode) {
-                statsHtml += `
-                    <div class="gh-stat-card card">
-                      <div class="gh-stat-header">
-                        <span style="font-size:14px;">🚀</span>
-                        <span class="gh-stat-title" style="color:#f59e0b;">LeetCode</span>
-                      </div>
-                      <div class="gh-stat-value">${data.leetcode.totalSolved} <span style="font-size:12px;color:#8a8a8a;font-weight:400;">Solved</span></div>
-                    </div>
-                `;
-            }
-            if (data.codeforces) {
-                statsHtml += `
-                    <div class="gh-stat-card card">
-                      <div class="gh-stat-header">
-                        <span style="font-size:14px;">📊</span>
-                        <span class="gh-stat-title" style="color:#3b82f6;">Codeforces</span>
-                      </div>
-                      <div class="gh-stat-value">${data.codeforces.rating} <span style="font-size:12px;color:#8a8a8a;font-weight:400;">Rating</span></div>
-                    </div>
-                `;
-            }
-            statsEl.innerHTML = statsHtml;
-            
-            if (data._stale) {
-                const staleHint = document.createElement('div');
-                staleHint.style.gridColumn = '1 / -1';
-                staleHint.style.color = '#f59e0b';
-                staleHint.style.fontSize = '12px';
-                staleHint.style.textAlign = 'center';
-                staleHint.style.marginBottom = '16px';
-                staleHint.textContent = `⚠️ Showing cached stats (last updated ${new Date(data._lastUpdated).toLocaleString()})`;
-                statsEl.prepend(staleHint);
-            }
-            
-            statsEl.querySelectorAll('.gh-stat-card').forEach(c => {
-                c.onmousemove = e => { 
-                    const rect = c.getBoundingClientRect(); 
-                    c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-                    c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-                };
+
+            const rendered = renderHeatmap({
+                grid,
+                months,
+                days: leetcode.window.days,
+                tooltip: heatmapTooltip(),
+                noun: 'submission',
+                maxWeeks: leetcode.window.weeks,
             });
-            
-            // Render LeetCode Heatmap
-            const cal = data.leetcode ? data.leetcode.calendar : {};
-            const totalSubmissions = Object.values(cal).reduce((sum, count) => sum + count, 0);
-            lcGrid.setAttribute('aria-label', `LeetCode activity: ${totalSubmissions} submissions in the last 6 months`);
+            if (!rendered) throw new Error('LeetCode data could not be rendered');
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const startDate = new Date(today);
-            startDate.setDate(today.getDate() - 181);
-            
-            let dayIter = new Date(startDate);
-            while(dayIter <= today) {
-                const d = document.createElement('div');
-                const dayStart = dayIter.getTime() / 1000;
-                const dayEnd = dayStart + 86400;
-                
-                let count = 0;
-                for (const ts in cal) {
-                    if (ts >= dayStart && ts < dayEnd) {
-                        count += cal[ts];
-                    }
-                }
-                
-                let colorIdx = 0;
-                if (count > 0 && count <= 2) colorIdx = 1;
-                else if (count > 2 && count <= 4) colorIdx = 2;
-                else if (count > 4 && count <= 6) colorIdx = 3;
-                else if (count > 6) colorIdx = 4;
-                
-                d.style.background = amberColors[colorIdx];
-                lcGrid.appendChild(d);
-                
-                dayIter.setDate(dayIter.getDate() + 1);
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            statsEl.replaceChildren();
+            const cards = [
+                {
+                    label: 'Problems solved',
+                    value: String(leetcode.totalSolved),
+                    meta: `Easy ${leetcode.easySolved} · Medium ${leetcode.mediumSolved} · Hard ${leetcode.hardSolved}`,
+                },
+                {
+                    label: `Submissions · ${leetcode.year}`,
+                    value: String(leetcode.yearTotal),
+                    meta: `${leetcode.yearActiveDays} active days`,
+                },
+                {
+                    label: 'Last submission',
+                    value: leetcode.lastActive ? formatDayLabel(leetcode.lastActive) : '—',
+                    meta: 'Synced from LeetCode',
+                },
+            ];
+
+            for (const card of cards) {
+                const box = document.createElement('div');
+                box.className = 'gh-stat-card card';
+
+                const header = document.createElement('div');
+                header.className = 'gh-stat-header';
+                const title = document.createElement('span');
+                title.className = 'gh-stat-title';
+                title.textContent = card.label;
+                header.appendChild(title);
+
+                const value = document.createElement('div');
+                value.className = 'gh-stat-value';
+                value.textContent = card.value;
+
+                const meta = document.createElement('div');
+                meta.className = 'gh-stat-meta';
+                meta.textContent = card.meta;
+
+                box.append(header, value, meta);
+                statsEl.appendChild(box);
             }
 
-        } catch(e) {
-            console.error('Codolio fetch error:', e);
-            codolioLoading.innerHTML = codolioFallbackHTML;
-            lcGrid.setAttribute('aria-label', 'LeetCode activity data unavailable.');
+            grid.setAttribute('role', 'img');
+            grid.setAttribute('aria-label', `LeetCode submissions: ${rendered.summary}`);
+            grid.removeAttribute('aria-busy');
+
+            if (totalEl) totalEl.textContent = `${rendered.total} submissions`;
+            setUpdatedLabel(updatedEl, leetcode.fetchedAt, data.stale);
+        } catch (error) {
+            console.error('Failed to load LeetCode activity:', error);
+            loading.style.display = 'block';
+            loading.style.height = 'auto';
+            loading.classList.remove('skeleton-box');
+            loading.innerHTML = LC_FALLBACK;
+            content.style.display = 'none';
+
+            grid.removeAttribute('role');
+            grid.removeAttribute('aria-label');
+            grid.removeAttribute('aria-busy');
+            if (months) months.replaceChildren();
+            if (totalEl) totalEl.textContent = 'Unavailable';
+            if (updatedEl) updatedEl.textContent = '';
         }
-    })();
+    }
+
+    loadLeetCode();
+
+    // --- Heatmap refresh + revalidation ---
+    document.querySelectorAll('[data-heatmap-refresh]').forEach(button => {
+        button.addEventListener('click', async () => {
+            if (button.disabled) return;
+            button.disabled = true;
+            button.classList.add('is-busy');
+            try {
+                if (button.dataset.heatmapRefresh === 'github') {
+                    await loadGitHubHeatmap(true, true);
+                } else {
+                    await loadLeetCode(true, true);
+                }
+            } finally {
+                button.disabled = false;
+                button.classList.remove('is-busy');
+            }
+        });
+    });
+
+    let lastRevalidation = Date.now();
+    const revalidateActivity = () => {
+        if (document.visibilityState !== 'visible') return;
+        if (Date.now() - lastRevalidation < 120000) return;
+        lastRevalidation = Date.now();
+        loadGitHubHeatmap(true);
+        loadLeetCode(true);
+    };
+    document.addEventListener('visibilitychange', revalidateActivity);
+    window.addEventListener('online', revalidateActivity);
+    setInterval(revalidateActivity, 300000);
+
+    setInterval(() => {
+        document.querySelectorAll('.heatmap-updated[data-fetched-at]').forEach((element) => {
+            setUpdatedLabel(element, element.dataset.fetchedAt, element.dataset.stale === 'true');
+        });
+    }, 60000);
 
     // --- GitHub Open Source PRs & Stats ---
     (async function loadGitHubPRs() {
@@ -562,7 +684,10 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('GitHub PRs fetch error:', err);
         }
 
-        const prs = data && Array.isArray(data.prs) ? data.prs : [];
+        const prs = (data && Array.isArray(data.prs) ? data.prs : []).slice().sort((a, b) => {
+            const priority = { merged: 0, open: 1, closed: 2 };
+            return (priority[a.category] ?? 3) - (priority[b.category] ?? 3);
+        });
         const user = data && data.user ? data.user : null;
         const totalCount = data && Number.isFinite(data.totalCount) ? data.totalCount : prs.length;
 
@@ -589,7 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     <div class="gh-stat-card">
                       <div class="gh-stat-header">
-                        <svg style="color:#22c55e" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
                         <span class="gh-stat-title">Open PRs</span>
                       </div>
                       <div class="gh-stat-value">${openCount}</div>
@@ -597,7 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     <div class="gh-stat-card">
                       <div class="gh-stat-header">
-                        <svg style="color:#a855f7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
                         <span class="gh-stat-title">Merged PRs</span>
                       </div>
                       <div class="gh-stat-value">${mergedCount}</div>
@@ -610,12 +735,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (countEl) countEl.textContent = data ? `${totalCount} public PRs` : 'PRs unavailable';
         
+        const expandBtn = document.getElementById('os-expand');
+        const INITIAL_COUNT = 3;
+        let activeFilter = 'all';
+        let showAll = false;
+
         function render(filter) {
             let filtered = prs;
             if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
-            if (filtered.length === 0) { listEl.innerHTML = '<div class="loading-placeholder">No PRs in this category.</div>'; return; }
-            
-            listEl.innerHTML = filtered.map(pr => {
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div class="loading-placeholder">No PRs in this category.</div>';
+                if (expandBtn) expandBtn.hidden = true;
+                return;
+            }
+
+            const visible = showAll ? filtered : filtered.slice(0, INITIAL_COUNT);
+            listEl.innerHTML = visible.map(pr => {
                 let icon = '';
                 let badgeClass = '';
                 if (pr.category === 'open') {
@@ -644,13 +779,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
             }).join('');
             
-            // Add mousemove effect to new PR cards
-            listEl.querySelectorAll('.pr-card').forEach(c => {
-                c.onmousemove = e => { 
-                    const rect = c.getBoundingClientRect(); 
-                    c.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px'); 
-                    c.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px'); 
-                };
+            if (expandBtn) {
+                if (filtered.length > INITIAL_COUNT) {
+                    expandBtn.hidden = false;
+                    expandBtn.textContent = showAll
+                        ? 'Show latest 3'
+                        : `View all ${filtered.length} pull requests`;
+                    expandBtn.setAttribute('aria-expanded', String(showAll));
+                } else {
+                    expandBtn.hidden = true;
+                }
+            }
+        }
+
+        if (expandBtn) {
+            expandBtn.addEventListener('click', () => {
+                showAll = !showAll;
+                render(activeFilter);
             });
         }
         
@@ -662,7 +807,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 tab.classList.add('active');
                 tab.setAttribute('aria-pressed', 'true');
-                render(tab.dataset.filter);
+                activeFilter = tab.dataset.filter;
+                showAll = false;
+                render(activeFilter);
             });
         });
         render('all');
