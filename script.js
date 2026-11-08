@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Heatmap Helpers (shared by GitHub and LeetCode) ---
-    const HEATMAP_COLORS = ['#171717', '#3d2a0b', '#6b4a16', '#b07824', '#f59e0b'];
+    const HEATMAP_COLORS = ['#161616', '#3a290e', '#75500f', '#b97a12', '#f5a524'];
     const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const DAY_MS = 86400000;
     const WEEK_MS = 7 * DAY_MS;
@@ -183,6 +183,33 @@ document.addEventListener("DOMContentLoaded", () => {
         return 4;
     }
 
+    function sizeHeatmap(grid, weeks) {
+        if (!grid) return;
+        const root = grid.closest('.heatmap');
+        const scroller = grid.closest('.heatmap-scroll');
+        if (!root || !scroller) return;
+
+        const available = scroller.clientWidth;
+        const columns = Math.max(1, Number(weeks) || 53);
+        if (!available) return;
+
+        const styles = getComputedStyle(root);
+        const gap = parseFloat(styles.getPropertyValue('--gap')) || 3;
+        const dayLabels = root.querySelector('.heatmap-days');
+        const dayWidth = dayLabels && dayLabels.offsetWidth ? dayLabels.offsetWidth : 0;
+        const bodyGap = dayWidth ? 8 : 0;
+        const fit = Math.floor((available - dayWidth - bodyGap - (columns - 1) * gap - 1) / columns);
+        const cell = Math.max(10, Math.min(30, fit));
+
+        root.style.setProperty('--cell', `${cell}px`);
+        root.dataset.weeks = String(columns);
+        grid.dataset.weeks = String(columns);
+
+        if (scroller.scrollWidth > scroller.clientWidth) {
+            scroller.scrollLeft = scroller.scrollWidth;
+        }
+    }
+
     function renderHeatmap({ grid, months, days, tooltip, noun, maxWeeks = 53 }) {
         if (!grid) return null;
 
@@ -227,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cell.style.gridColumn = String(column);
             cell.style.gridRow = String(row);
             cell.style.background = HEATMAP_COLORS[level];
+            cell.dataset.level = String(level);
             cell.setAttribute('aria-hidden', 'true');
             cell.dataset.tip = `${day.count} ${noun}${day.count === 1 ? '' : 's'} on ${formatDayLabel(day.date)}`;
 
@@ -246,11 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         grid.replaceChildren(fragment);
 
-        // On narrow screens the grid scrolls horizontally; open on the most recent weeks.
-        const scroller = grid.closest('.heatmap-scroll');
-        if (scroller && scroller.scrollWidth > scroller.clientWidth && scroller.scrollLeft === 0) {
-            scroller.scrollLeft = scroller.scrollWidth;
-        }
+        // Cell size is derived from the column width, so the grid fills the card
+        // instead of sitting in a cramped corner. Narrow screens keep the minimum
+        // cell size and scroll to the most recent weeks.
+        sizeHeatmap(grid, weeks);
 
         if (months) {
             const monthFragment = document.createDocumentFragment();
@@ -262,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const month = new Date(columnStart).getUTCMonth();
                 if (month === lastMonth) continue;
                 lastMonth = month;
-                if (column - lastLabelColumn < 4) continue;
+                if (column - lastLabelColumn < 3) continue;
 
                 const label = document.createElement('span');
                 label.textContent = MONTH_NAMES[month];
@@ -297,6 +324,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const months = document.getElementById('gh-heatmap-months');
         const totalEl = document.getElementById('gh-total-contribs');
         const updatedEl = document.getElementById('gh-updated');
+        const labelEl = document.getElementById('gh-heatmap-label');
+        const root = grid && grid.closest('.heatmap');
+        const wrap = grid && grid.closest('.gh-heatmap-wrap');
         if (!grid) return;
 
         try {
@@ -307,29 +337,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error('No contribution data returned');
             }
 
+            const partial = data.partial === true;
             const rendered = renderHeatmap({
                 grid,
                 months,
                 days: data.days,
                 tooltip: heatmapTooltip(),
-                noun: 'contribution',
+                noun: partial ? 'public event' : 'contribution',
             });
             if (!rendered) throw new Error('Contribution data could not be rendered');
 
+            if (root) {
+                root.classList.remove('is-fallback');
+                root.classList.toggle('is-partial', partial);
+            }
+            if (wrap) wrap.classList.remove('is-fallback');
+
             grid.setAttribute('role', 'img');
-            grid.setAttribute('aria-label', `GitHub contributions: ${rendered.summary}`);
+            grid.setAttribute('aria-label', `GitHub activity: ${rendered.summary}`);
             grid.removeAttribute('aria-busy');
 
-            if (totalEl) totalEl.textContent = `${rendered.total} contributions · last year`;
+            if (labelEl) {
+                labelEl.textContent = partial ? 'Public Activity · Last 90 Days' : 'Contribution Graph';
+            }
+            if (totalEl) {
+                totalEl.textContent = partial
+                    ? `${rendered.total} events · last 90 days`
+                    : `${rendered.total} contributions · last year`;
+            }
             setUpdatedLabel(updatedEl, data.fetchedAt, data.stale);
         } catch (error) {
             console.error('Failed to load GitHub heatmap:', error);
-            grid.style.setProperty('--weeks', '53');
+            if (root) {
+                root.classList.add('is-fallback');
+                root.classList.remove('is-partial');
+                root.style.setProperty('--weeks', '53');
+            }
+            if (wrap) wrap.classList.add('is-fallback');
             grid.removeAttribute('role');
             grid.removeAttribute('aria-label');
             grid.removeAttribute('aria-busy');
             if (months) months.replaceChildren();
             grid.innerHTML = GH_FALLBACK;
+            if (labelEl) labelEl.textContent = 'Contribution Graph';
             if (totalEl) totalEl.textContent = 'Unavailable';
             if (updatedEl) updatedEl.textContent = '';
         }
@@ -367,19 +417,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Generate Repo Card HTML
-    function getRepoCardHTML(repo) {
+    function getRepoCardHTML(repo, index) {
         return `
-            <a href="${safeUrl(repo.html_url)}" class="pinned-repo-card card" target="_blank" rel="noopener noreferrer">
+            <a href="${safeUrl(repo.html_url)}" class="pinned-repo-card" target="_blank" rel="noopener noreferrer">
+                <div class="repo-top">
+                    <span class="repo-index">${String(index + 1).padStart(2, '0')}</span>
+                    <span class="repo-updated">${formatDate(repo.updated_at)}</span>
+                </div>
                 <div class="pinned-repo-title">
-                    <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
-                    ${escapeHtml(repo.name)}
+                    <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                    <span class="repo-title-text">${escapeHtml(repo.name)}</span>
                 </div>
                 <div class="pinned-repo-desc">${escapeHtml(repo.description || 'No description provided.')}</div>
                 <div class="pinned-repo-meta">
                     ${repo.language ? `<span><span class="gh-dot" style="background:${getLangColor(repo.language)}"></span>${escapeHtml(repo.language)}</span>` : ''}
                     ${repo.stargazers_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.819 6.372a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg> ${repo.stargazers_count}</span>` : ''}
-                    ${repo.forks_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${repo.forks_count}</span>` : ''}
-                    <span>${formatDate(repo.updated_at)}</span>
+                    ${repo.forks_count > 0 ? `<span><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${repo.forks_count}</span>` : ''}
                 </div>
             </a>
         `;
@@ -409,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     pinned = pinned.concat(remaining.slice(0, 3 - pinned.length));
                 }
                 
-                pinnedGrid.innerHTML = pinned.map(r => getRepoCardHTML(r)).join('');
+                pinnedGrid.innerHTML = pinned.map((repo, index) => getRepoCardHTML(repo, index)).join('');
                 
                 if (data._stale) {
                     const staleHint = document.createElement('div');
@@ -434,7 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
             modalList.innerHTML = '<div class="loading-placeholder">No repositories found.</div>';
             return;
         }
-        modalList.innerHTML = reposToRender.map(r => getRepoCardHTML(r)).join('');
+        modalList.innerHTML = reposToRender.map((repo, index) => getRepoCardHTML(repo, index)).join('');
     }
 
     let lastFocusedElement = null;
@@ -564,6 +617,9 @@ document.addEventListener("DOMContentLoaded", () => {
             loading.style.display = 'none';
             content.style.display = 'block';
 
+            // The grid was measured while hidden, so size it once the card is visible.
+            sizeHeatmap(grid, rendered.weeks);
+
             statsEl.replaceChildren();
             const cards = [
                 {
@@ -662,6 +718,45 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('online', revalidateActivity);
     setInterval(revalidateActivity, 300000);
 
+    let heatmapResizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(heatmapResizeTimer);
+        heatmapResizeTimer = setTimeout(() => {
+            document.querySelectorAll('.heatmap-grid[data-weeks]').forEach((grid) => {
+                sizeHeatmap(grid, grid.dataset.weeks);
+            });
+        }, 150);
+    });
+
+    // --- Pointer specular on glass surfaces ---
+    // A single delegated listener keeps dynamically rendered cards covered
+    // without rebinding on every fetch.
+    const GLASS_SELECTOR = '.exp-card, .project-card, .pinned-repo-card, .gh-stat-card, .gh-heatmap-wrap, .lc-heatmap-wrap, .pr-card, .lc-quote, .blog-empty-state';
+    let specularFrame = 0;
+    let specularPoint = null;
+
+    document.addEventListener('pointermove', (event) => {
+        if (event.pointerType === 'touch') return;
+        specularPoint = event;
+        if (specularFrame) return;
+        specularFrame = requestAnimationFrame(() => {
+            specularFrame = 0;
+            const card = specularPoint.target.closest ? specularPoint.target.closest(GLASS_SELECTOR) : null;
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${specularPoint.clientX - rect.left}px`);
+            card.style.setProperty('--my', `${specularPoint.clientY - rect.top}px`);
+        });
+    }, { passive: true });
+
+    document.addEventListener('pointerout', (event) => {
+        const card = event.target.closest ? event.target.closest(GLASS_SELECTOR) : null;
+        if (!card) return;
+        if (event.relatedTarget instanceof Node && card.contains(event.relatedTarget)) return;
+        card.style.removeProperty('--mx');
+        card.style.removeProperty('--my');
+    });
+
     setInterval(() => {
         document.querySelectorAll('.heatmap-updated[data-fetched-at]').forEach((element) => {
             setUpdatedLabel(element, element.dataset.fetchedAt, element.dataset.stale === 'true');
@@ -679,7 +774,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let data = null;
         try {
-            data = await fetchWithRetryAndCache('/api/prs', 'gh_prs_cache_v4', 3600000);
+            data = await fetchWithRetryAndCache('/api/prs', 'gh_prs_cache_v5', 3600000);
         } catch (err) {
             console.error('GitHub PRs fetch error:', err);
         }
@@ -740,6 +835,19 @@ document.addEventListener("DOMContentLoaded", () => {
         let activeFilter = 'all';
         let showAll = false;
 
+        document.querySelectorAll('.os-tab-count').forEach(el => {
+            const key = el.dataset.count;
+            const count = key === 'all' ? prs.length : prs.filter(p => p.category === key).length;
+            el.textContent = String(count);
+        });
+
+        function formatPrDate(iso) {
+            if (!iso) return '';
+            const date = new Date(iso);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
         function render(filter) {
             let filtered = prs;
             if (filter !== 'all') filtered = prs.filter(p => p.category === filter);
@@ -752,29 +860,33 @@ document.addEventListener("DOMContentLoaded", () => {
             const visible = showAll ? filtered : filtered.slice(0, INITIAL_COUNT);
             listEl.innerHTML = visible.map(pr => {
                 let icon = '';
-                let badgeClass = '';
                 if (pr.category === 'open') {
-                    badgeClass = 'open';
-                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>';
                 } else if (pr.category === 'merged') {
-                    badgeClass = 'merged';
-                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>';
                 } else {
-                    badgeClass = 'closed';
-                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+                    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
                 }
-                
+
+                const dateLabel = formatPrDate(pr.date);
+
                 return `
-                <a href="${safeUrl(pr.url)}" class="pr-card card" target="_blank" rel="noopener noreferrer">
-                    <div class="pr-header">
-                      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
-                      <span class="pr-repo">${escapeHtml(pr.repo)}</span>
-                      <span>#${escapeHtml(pr.number)}</span>
-                    </div>
-                    <div class="pr-title">${escapeHtml(pr.title)}</div>
-                    <div class="pr-badge ${badgeClass}">
-                      ${icon} ${escapeHtml(pr.status)}
-                    </div>
+                <a href="${safeUrl(pr.url)}" class="pr-card pr-${escapeHtml(pr.category)}" target="_blank" rel="noopener noreferrer">
+                    <span class="pr-status">
+                      ${icon}
+                      <span>${escapeHtml(pr.status)}</span>
+                    </span>
+                    <span class="pr-body">
+                      <span class="pr-meta">
+                        <span class="pr-repo">${escapeHtml(pr.repo)}</span>
+                        <span class="pr-num">#${escapeHtml(pr.number)}</span>
+                        ${dateLabel ? `<span class="pr-date">${escapeHtml(dateLabel)}</span>` : ''}
+                      </span>
+                      <span class="pr-title">${escapeHtml(pr.title)}</span>
+                    </span>
+                    <span class="pr-arrow" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg>
+                    </span>
                 </a>
                 `;
             }).join('');

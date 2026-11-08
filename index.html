@@ -29,7 +29,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 
@@ -71,6 +71,13 @@
 </head>
 <body>
 
+    <div class="ambient" aria-hidden="true">
+        <span class="ambient-glow ambient-glow-a"></span>
+        <span class="ambient-glow ambient-glow-b"></span>
+        <span class="ambient-glow ambient-glow-c"></span>
+        <span class="ambient-grain"></span>
+    </div>
+
     <a href="#main-content" class="skip-link">Skip to content</a>
 
     <div class="layout-wrapper">
@@ -85,7 +92,7 @@
                     <span class="masthead-place">Bengaluru, IN</span>
                 </header>
 
-                <div class="hero-banner" aria-hidden="true"></div>
+                <div class="hero-banner" aria-hidden="true"><span class="hero-banner-media"></span></div>
 
                 <div class="hero-head">
                     <img src="https://avatars.githubusercontent.com/u/234775624?s=144&amp;v=4" alt="Shafeeq Aadhil" class="profile-img" width="64" height="64" fetchpriority="high" onerror="this.onerror=null;this.style.display='flex';this.style.alignItems='center';this.style.justifyContent='center';this.style.fontSize='1.25rem';this.style.color='#8a8a8a';this.outerHTML='<div class=&quot;profile-img&quot; style=&quot;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#8a8a8a;width:64px;height:64px;&quot;>SA</div>';">
@@ -305,7 +312,7 @@
               <!-- Contribution heatmap -->
               <div class="gh-heatmap-wrap">
                 <div class="gh-heatmap-header">
-                  <span>Contribution Graph</span>
+                  <span id="gh-heatmap-label">Contribution Graph</span>
                   <span class="heatmap-meta">
                     <span id="gh-total-contribs">Loading activity…</span>
                     <button type="button" class="heatmap-refresh" data-heatmap-refresh="github" aria-label="Refresh GitHub activity" title="Refresh GitHub activity">&#8635;</button>
@@ -328,11 +335,11 @@
                   <div class="gh-legend" aria-hidden="true">
                     <span>Less</span>
                     <div class="gh-legend-dots">
-                      <div style="background:#171717"></div>
-                      <div style="background:#3d2a0b"></div>
-                      <div style="background:#6b4a16"></div>
-                      <div style="background:#b07824"></div>
-                      <div style="background:#f59e0b"></div>
+                      <div style="background:#161616"></div>
+                      <div style="background:#3a290e"></div>
+                      <div style="background:#75500f"></div>
+                      <div style="background:#b97a12"></div>
+                      <div style="background:#f5a524"></div>
                     </div>
                     <span>More</span>
                   </div>
@@ -349,7 +356,7 @@
             <!-- Pinned Repositories Section -->
             <section id="pinned" class="section pinned-section">
                 <h2 class="section-header"><span class="section-index">04</span>Pinned Repositories<span class="section-rule" aria-hidden="true"></span></h2>
-                <div id="pinned-repos-grid" class="projects-grid">
+                <div id="pinned-repos-grid" class="pinned-grid">
                     <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
                     <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
                     <div class="skeleton-box" style="height: 140px; width: 100%;"></div>
@@ -367,12 +374,12 @@
                   <h2 class="section-header"><span class="section-index">05</span>Open Source<span class="section-rule" aria-hidden="true"></span></h2>
                   <span id="os-count" class="section-meta">Loading…</span>
                 </div>
-                <div class="os-card-wrapper card">
+                <div class="os-card-wrapper">
                   <div class="os-tabs" role="group" aria-label="Filter pull requests by status">
-                    <button type="button" class="os-tab active" data-filter="all" aria-pressed="true">All</button>
-                    <button type="button" class="os-tab" data-filter="open" aria-pressed="false">Open</button>
-                    <button type="button" class="os-tab" data-filter="merged" aria-pressed="false">Merged</button>
-                    <button type="button" class="os-tab" data-filter="closed" aria-pressed="false">Closed</button>
+                    <button type="button" class="os-tab active" data-filter="all" aria-pressed="true">All <span class="os-tab-count" data-count="all"></span></button>
+                    <button type="button" class="os-tab" data-filter="open" aria-pressed="false">Open <span class="os-tab-count" data-count="open"></span></button>
+                    <button type="button" class="os-tab" data-filter="merged" aria-pressed="false">Merged <span class="os-tab-count" data-count="merged"></span></button>
+                    <button type="button" class="os-tab" data-filter="closed" aria-pressed="false">Closed <span class="os-tab-count" data-count="closed"></span></button>
                   </div>
                   <div id="os-list" class="os-grid">
                       <div class="skeleton-box" style="height: 80px; width: 100%;"></div>
@@ -448,11 +455,11 @@
                       <div class="lc-legend" aria-hidden="true">
                         <span>Less</span>
                         <div class="lc-legend-dots">
-                          <div style="background:#171717"></div>
-                          <div style="background:#3d2a0b"></div>
-                          <div style="background:#6b4a16"></div>
-                          <div style="background:#b07824"></div>
-                          <div style="background:#f59e0b"></div>
+                          <div style="background:#161616"></div>
+                          <div style="background:#3a290e"></div>
+                          <div style="background:#75500f"></div>
+                          <div style="background:#b97a12"></div>
+                          <div style="background:#f5a524"></div>
                         </div>
                         <span>More</span>
                       </div>
