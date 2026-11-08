@@ -7,9 +7,10 @@ let lastFetchTime = 0;
 function mapPr(pr) {
   let status = 'Open';
   let category = 'open';
+  const mergedAt = pr.pull_request && pr.pull_request.merged_at;
 
   if (pr.state === 'closed') {
-    if (pr.pull_request && pr.pull_request.merged_at) {
+    if (mergedAt) {
       status = 'Merged';
       category = 'merged';
     } else {
@@ -18,12 +19,19 @@ function mapPr(pr) {
     }
   }
 
+  const date = category === 'merged'
+    ? mergedAt
+    : category === 'closed'
+      ? pr.closed_at
+      : pr.created_at;
+
   return {
     title: pr.title,
     repo: pr.repository_url.replace('https://api.github.com/repos/', ''),
     number: pr.number,
     status,
     category,
+    date: date || pr.updated_at || null,
     url: pr.html_url,
   };
 }

@@ -1,6 +1,8 @@
 const USERNAME = 'shafeeq27edu-ai';
 const CACHE_TTL = 5 * 60 * 1000;
 const REQUEST_TIMEOUT = 6000;
+const DAY_MS = 86400000;
+const EVENTS_WINDOW_DAYS = 90;
 
 let cache = null;
 let lastFetchTime = 0;
@@ -47,6 +49,7 @@ function buildPayload(rawDays, followers, source) {
     endDate: days.length ? days[days.length - 1].date : null,
     fetchedAt: new Date().toISOString(),
     source,
+    partial: false,
     fallback: false,
   };
 }
@@ -151,6 +154,78 @@ async function fetchFromHTML() {
   }
 }
 
+// Last resort: public events cover the last 90 days from api.github.com,
+// which stays reachable when github.com HTML routes are blocked.
+async function fetchFromEvents() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  const cutoff = Date.now() - EVENTS_WINDOW_DAYS * DAY_MS;
+
+  try {
+    const counts = new Map();
+    let url = `https://api.github.com/users/${USERNAME}/events/public?per_page=100`;
+
+    for (let page = 0; page < 3 && url; page += 1) {
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'User-Agent': 'aadhil-portfolio/1.0',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub events API returned ${response.status}`);
+      }
+
+      const events = await response.json();
+      if (!Array.isArray(events) || events.length === 0) break;
+
+      let reachedCutoff = false;
+      for (const event of events) {
+        const createdAt = Date.parse(event.created_at);
+        if (!Number.isFinite(createdAt)) continue;
+        if (createdAt < cutoff) {
+          reachedCutoff = true;
+          continue;
+        }
+
+        const date = new Date(createdAt).toISOString().slice(0, 10);
+        const commits = event.type === 'PushEvent' ? event.payload && event.payload.commits : null;
+        const amount = Array.isArray(commits) && commits.length > 0 ? commits.length : 1;
+        counts.set(date, (counts.get(date) || 0) + amount);
+      }
+
+      if (reachedCutoff) break;
+
+      const link = response.headers.get('link') || '';
+      const next = link.match(/<([^>]+)>;\s*rel="next"/);
+      url = next ? next[1] : null;
+    }
+
+    if (counts.size === 0) {
+      throw new Error('GitHub events API returned no activity');
+    }
+
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const days = [];
+    for (let offset = EVENTS_WINDOW_DAYS - 1; offset >= 0; offset -= 1) {
+      const date = new Date(today.getTime() - offset * DAY_MS).toISOString().slice(0, 10);
+      days.push({ date, count: counts.get(date) || 0 });
+    }
+
+    return {
+      ...buildPayload(days, null, 'events'),
+      partial: true,
+      windowDays: EVENTS_WINDOW_DAYS,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -165,23 +240,31 @@ export default async function handler(req, res) {
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
   try {
-    let payload;
-    if (token) {
-      try {
-        payload = await fetchFromGraphQL(token);
-      } catch (error) {
-        console.warn(`GitHub GraphQL unavailable (${error.message}); using public contributions page.`);
-        payload = await fetchFromHTML();
+    // GraphQL gives the full year when the token is valid; the public page and
+    // the events API cover the unauthenticated case. Whichever highest-priority
+    // source resolves first wins.
+    const sources = [];
+    if (token) sources.push(fetchFromGraphQL(token));
+    sources.push(fetchFromHTML());
+    sources.push(fetchFromEvents());
+
+    const outcomes = await Promise.allSettled(sources);
+    const payload = outcomes.find((outcome) => outcome.status === 'fulfilled');
+
+    if (!payload) {
+      for (const outcome of outcomes) {
+        if (outcome.status === 'rejected') {
+          console.warn(`GitHub source failed: ${outcome.reason && outcome.reason.message ? outcome.reason.message : outcome.reason}`);
+        }
       }
-    } else {
-      payload = await fetchFromHTML();
+      throw new Error('All GitHub data sources failed');
     }
 
-    cache = payload;
+    cache = payload.value;
     lastFetchTime = Date.now();
 
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
-    return res.status(200).json(payload);
+    return res.status(200).json(payload.value);
   } catch (error) {
     console.error('Error fetching GitHub contributions:', error.message || error);
 
